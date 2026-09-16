@@ -28,16 +28,15 @@
             height: 100vh;
             overflow: hidden;
             text-transform: uppercase;
-            touch-action: none; /* Prevents pull-to-refresh on mobile */
+            touch-action: none;
         }
         
-        /* 9:16 Aspect Ratio Container - Scalable */
         #game-container {
             position: relative;
             width: 100%;
             height: 100%;
-            max-width: 56.25vh; /* (9/16) * 100vh */
-            max-height: 177.77vw; /* (16/9) * 100vw */
+            max-width: 56.25vh; 
+            max-height: 177.77vw; 
             background-color: #222;
             box-shadow: 0 0 20px rgba(0,0,0,1);
             image-rendering: pixelated;
@@ -92,7 +91,6 @@
             z-index: 10;
         }
         
-        /* --- RETRO TYPOGRAPHY --- */
         .title-giant {
             font-size: clamp(40px, 10vw, 60px);
             line-height: 1;
@@ -138,7 +136,6 @@
         .rules-container p { margin: 8px 0; text-align: left; max-width: 100%; }
         .rules-container b { color: #ffcc00; }
 
-        /* --- CHUNKY RETRO BUTTONS --- */
         .chunky-btn {
             font-family: 'Lucida Console', Monaco, monospace;
             font-size: clamp(14px, 4vw, 20px);
@@ -166,7 +163,6 @@
             transform: none !important;
         }
 
-        /* Button Color Themes */
         .btn-yellow { background-color: #ffcc00; border-top-color: #ffe680; border-left-color: #ffe680; border-bottom-color: #b38f00; border-right-color: #b38f00; }
         .btn-blue   { background-color: #00b0ff; border-top-color: #80d8ff; border-left-color: #80d8ff; border-bottom-color: #007bb2; border-right-color: #007bb2; color: #fff; }
         .btn-red    { background-color: #ff1744; border-top-color: #ff8a80; border-left-color: #ff8a80; border-bottom-color: #b2102f; border-right-color: #b2102f; color: #fff; }
@@ -179,13 +175,12 @@
             margin: 0;
         }
 
-        /* --- TOUCH CONTROLS --- */
         .touch-zone-container {
             position: absolute;
             bottom: 2%; 
             left: 0;
             width: 100%;
-            height: 26%; /* 25% smaller than original 35% */
+            height: 26%; 
             display: flex;
             justify-content: space-between;
             z-index: 15;
@@ -196,7 +191,7 @@
         .touch-zone-container.keyboard-mode .touch-btn { pointer-events: none; }
 
         .touch-btn {
-            width: 35%; /* Leaves a 30% gap in the middle to see cyclist */
+            width: 35%; 
             margin: 0 15px; 
             display: flex;
             justify-content: center;
@@ -212,10 +207,8 @@
 <body>
 
 <div id="game-container">
-    <!-- 9:16 Canvas Base (540x960) -->
     <canvas id="gameCanvas" width="540" height="960"></canvas>
     
-    <!-- Top HUD Bar -->
     <div id="hud" class="hud hidden">
         <div id="scoreDisplay">SCORE: 0</div>
         <button id="pauseBtn" class="chunky-btn btn-grey pause-hud-btn">PAUSE (P)</button>
@@ -223,13 +216,11 @@
     </div>
     <div id="levelDisplay" class="hud-center hidden">LEVEL 1: PRENZLAUER BERG</div>
 
-    <!-- Mobile Touch Controls -->
     <div id="touchControls" class="touch-zone-container hidden">
         <div id="btnLeft" class="chunky-btn btn-grey touch-btn">◀ L</div>
         <div id="btnRight" class="chunky-btn btn-grey touch-btn">R ▶</div>
     </div>
 
-    <!-- Start Screen -->
     <div id="startScreen" class="ui-layer">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
@@ -240,7 +231,6 @@
         <p style="color:#aaa; margin-top:20px;">(PRESS ENTER)</p>
     </div>
 
-    <!-- Rules Screen -->
     <div id="rulesScreen" class="ui-layer hidden">
         <h2 style="color: #ffcc00; font-size: clamp(24px, 6vw, 30px); margin-top:0;">SURVIVAL GUIDE</h2>
         <div class="rules-container">
@@ -256,7 +246,6 @@
         </div>
     </div>
 
-    <!-- Pause Screen -->
     <div id="pauseScreen" class="ui-layer hidden">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
@@ -265,7 +254,6 @@
         </div>
     </div>
 
-    <!-- Game Over Screen -->
     <div id="gameOverScreen" class="ui-layer hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
@@ -276,10 +264,8 @@
 </div>
 
 <script>
-    /** 
-     * =========================================
-     * 1. HIGH-CONTRAST ASSET ENGINE (SVG Data URIs)
-     * =========================================
+    /**
+     * Asset engine defining graphical elements using inline SVG strings.
      */
     const RAW_SVGS = {
         "player": `<svg width="20" height="40" viewBox="0 0 20 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="9" y="2" width="2" height="36" fill="#111"/><rect x="4" y="8" width="12" height="3" fill="#000"/><rect x="5" y="15" width="10" height="12" fill="#00ffff"/><rect x="6" y="11" width="8" height="7" fill="#ffff00"/><rect x="6" y="17" width="8" height="8" fill="#ff3333"/></svg>`,
@@ -308,7 +294,6 @@
     let assetsLoaded = 0;
     const totalAssets = Object.keys(RAW_SVGS).length;
 
-    // Load assets into memory asynchronously
     for (const [key, svgString] of Object.entries(RAW_SVGS)) {
         const img = new Image();
         img.onload = () => {
@@ -324,10 +309,8 @@
         ASSETS[key] = img;
     }
 
-    /** 
-     * =========================================
-     * 2. CONFIGURATION & TIME-BASED PARAMETERS (Doubled Speeds)
-     * =========================================
+    /**
+     * Global configuration object containing dimensions, velocities, and game timing parameters.
      */
     const CONFIG = {
         width: 540,
@@ -339,7 +322,7 @@
         sidewalkWidth: 230,     
         invincibilitySeconds: 3.0,     
         policeWarningSeconds: 1.5,     
-        scorePerSecond: 120,           // DOUBLED from 60 to 120 score/sec
+        scorePerSecond: 120,           
         pointsToNextLevel: 2000 
     };
 
@@ -358,25 +341,22 @@
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
 
-    // DOUBLED event and spawn frequencies across all neighborhoods
+    /**
+     * Level progression data defining spawn rates and speeds per Berlin neighborhood.
+     */
     const LEVELS = [
-        { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.000 },
-        { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.000 },
-        { name: "Charlottenburg",  obsPerSec: 0.96, carPerSec: 2.10, pedPerSec: 1.20, carSpeed: 810, erraticChance: 0.10, policeChance: 0.00016 },
-        { name: "Schöneberg",      obsPerSec: 1.44, carPerSec: 2.80, pedPerSec: 1.80, carSpeed: 840, erraticChance: 0.12, policeChance: 0.00016 },
-        { name: "Friedrichshain",  obsPerSec: 1.92, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 870, erraticChance: 0.15, policeChance: 0.00024 },
-        { name: "Kreuzberg",       obsPerSec: 2.40, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 900, erraticChance: 0.18, policeChance: 0.00024 },
-        { name: "Wedding",         obsPerSec: 3.00, carPerSec: 4.90, pedPerSec: 3.60, carSpeed: 930, erraticChance: 0.20, policeChance: 0.00032 },
-        { name: "Moabit",          obsPerSec: 3.60, carPerSec: 5.60, pedPerSec: 4.20, carSpeed: 960, erraticChance: 0.22, policeChance: 0.00032 },
-        { name: "Tempelhof",       obsPerSec: 4.20, carPerSec: 7.00, pedPerSec: 4.80, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.00040 },
-        { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.00050 }
+        { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.05 },
+        { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.08 },
+        { name: "Charlottenburg",  obsPerSec: 0.96, carPerSec: 2.10, pedPerSec: 1.20, carSpeed: 810, erraticChance: 0.10, policeChance: 0.12 },
+        { name: "Schöneberg",      obsPerSec: 1.44, carPerSec: 2.80, pedPerSec: 1.80, carSpeed: 840, erraticChance: 0.12, policeChance: 0.15 },
+        { name: "Friedrichshain",  obsPerSec: 1.92, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 870, erraticChance: 0.15, policeChance: 0.18 },
+        { name: "Kreuzberg",       obsPerSec: 2.40, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 900, erraticChance: 0.18, policeChance: 0.22 },
+        { name: "Wedding",         obsPerSec: 3.00, carPerSec: 4.90, pedPerSec: 3.60, carSpeed: 930, erraticChance: 0.20, policeChance: 0.25 },
+        { name: "Moabit",          obsPerSec: 3.60, carPerSec: 5.60, pedPerSec: 4.20, carSpeed: 960, erraticChance: 0.22, policeChance: 0.28 },
+        { name: "Tempelhof",       obsPerSec: 4.20, carPerSec: 7.00, pedPerSec: 4.80, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.32 },
+        { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.40 }
     ];
 
-    /** 
-     * =========================================
-     * 3. GAME ENGINE STATE & CONTROLS
-     * =========================================
-     */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false; 
@@ -394,13 +374,11 @@
     let isPlaying = false;
     let isPaused = false;
     
-    // Hit collision freeze variables
     let isHitFreeze = false;
     let hitFreezeTimer = 0;
     let bustedByPolice = false;
     let explosionPos = { x: 0, y: 0 };
     
-    // UI layout tracking variables
     let unifiedTouchOpacity = 1.0;
     let prefersKeyboard = false;
 
@@ -417,7 +395,6 @@
 
     const player = { x: 255, y: 750, width: 20, height: 40, invulnerableSeconds: 0 };
 
-    // Keyboard event listeners
     window.addEventListener("keydown", (e) => {
         if (keys.hasOwnProperty(e.code)) {
             keys[e.code] = true;
@@ -444,7 +421,6 @@
         if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
     });
 
-    // Mobile touch / mouse control handler with paired transparency fade
     function handleTouch(btn, isLeft, isActive) {
         if (prefersKeyboard) return; 
         
@@ -467,7 +443,6 @@
     btnRight.addEventListener("mousedown", (e) => { e.preventDefault(); handleTouch(btnRight, false, true); });
     btnRight.addEventListener("mouseup", (e) => { e.preventDefault(); handleTouch(btnRight, false, false); });
 
-    // Menu button hooks
     document.getElementById("startBtn").addEventListener("click", startGame);
     document.getElementById("startFromRulesBtn").addEventListener("click", startGame);
     document.getElementById("restartBtn").addEventListener("click", startGame);
@@ -533,7 +508,6 @@
         requestAnimationFrame(gameLoop);
     }
 
-    // Overlap checker to prevent entities from spawning inside each other
     function isOverlapping(newEnt, typeList, bufferX = 10, bufferY = 60) {
         for (let ent of entities) {
             if (typeList.includes(ent.type)) {
@@ -548,12 +522,13 @@
         return false;
     }
 
-    // Entity spawner utilizing real-world seconds (dt) for mobile/desktop timing parity
+    /**
+     * Handles dynamic entity spawning based on elapsed delta time.
+     */
     function spawnEntity(dt) {
         const lvl = LEVELS[currentLevel];
         let obsRate = policePresence ? (lvl.obsPerSec * 0.2) : lvl.obsPerSec;
         
-        // Spawn predictable light poles every 2 seconds
         if (!window.lightPoleTimer) window.lightPoleTimer = 0;
         window.lightPoleTimer += dt;
         if (window.lightPoleTimer >= 2.0) {
@@ -561,7 +536,6 @@
             entities.push({ type: "obstacle", name: "Light Pole", asset: "lightpole", x: 302.5, y: -50, width: 15, height: 15, vx: 0, vy: CONFIG.scrollSpeed });
         }
 
-        // Random obstacle spawning based on doubled probability per second
         if (Math.random() < obsRate * dt) {
             let obsDef = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
             let assetKey = obsDef.asset;
@@ -584,7 +558,6 @@
             }
         }
 
-        // Car and Bus spawner (Doubled per-second rate)
         if (Math.random() < lvl.carPerSec * dt) {
             let isBus = Math.random() < 0.2; 
             let w = isBus ? 90 : 38; 
@@ -597,21 +570,17 @@
             if (!isOverlapping(newVehicle, ["car", "bus"], 15, 120)) entities.push(newVehicle);
         }
 
-        // Pedestrian spawner (Doubled per-second rate)
         if (Math.random() < lvl.pedPerSec * dt) {
             let isErratic = Math.random() < lvl.erraticChance;
             entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
-        // Police patrol spawner (Doubled per-second rate)
-        let policeChanceRate = lvl.policeChance || 0.0001;
-        if (!policePresence && Math.random() < policeChanceRate * dt) {
+        if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
             entities.push({ type: "police", name: "Polizei", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
         }
     }
 
-    // Collision detection logic
     function checkCollisions() {
         if (player.invulnerableSeconds > 0) return;
 
@@ -659,7 +628,6 @@
         document.getElementById("finalScoreLevel").innerText = `Level ${currentLevel + 1}: ${LEVELS[currentLevel].name}`;
     }
 
-    // Main update loop using exact time delta (dt in seconds)
     function update(dt) {
         if (isHitFreeze) {
             hitFreezeTimer -= dt;
@@ -684,7 +652,6 @@
         if (player.x + player.width > CONFIG.width) player.x = CONFIG.width - player.width;
         if (player.invulnerableSeconds > 0) player.invulnerableSeconds -= dt;
 
-        // Score increments at doubled speed (120 points per real second)
         score += CONFIG.scorePerSecond * dt;
         let newLevel = Math.floor(score / CONFIG.pointsToNextLevel);
         if (newLevel > currentLevel && newLevel < LEVELS.length) currentLevel = newLevel;
@@ -701,7 +668,6 @@
                 ent.asset = (Math.floor(performance.now() / 150) % 2 === 0) ? "police1" : "police2";
             }
             
-            // Smart traffic jam / braking AI
             if (ent.type === "car" || ent.type === "bus") {
                 let blocked = false;
                 for (let j = 0; j < entities.length; j++) {
@@ -738,19 +704,17 @@
         frameCount++;
     }
 
-    // Render loop
     function draw() {
         // Draw Street Lanes
-        ctx.fillStyle = "#2b2b2b"; // Road
+        ctx.fillStyle = "#2b2b2b"; 
         ctx.fillRect(0, 0, CONFIG.roadWidth, CONFIG.height);
         
-        ctx.fillStyle = "#613838";  // Bike Lane
+        ctx.fillStyle = "#613838";  
         ctx.fillRect(CONFIG.roadWidth, 0, CONFIG.bikeLaneWidth, CONFIG.height);
 
-        ctx.fillStyle = "#6e6b66"; // Sidewalk
+        ctx.fillStyle = "#6e6b66"; 
         ctx.fillRect(CONFIG.roadWidth + CONFIG.bikeLaneWidth, 0, CONFIG.sidewalkWidth, CONFIG.height);
 
-        // Road markings
         ctx.strokeStyle = "#ffffff"; 
         ctx.setLineDash([20, 20]);
         ctx.lineWidth = 4;
@@ -767,7 +731,6 @@
         ctx.lineTo(CONFIG.roadWidth + CONFIG.bikeLaneWidth, CONFIG.height);
         ctx.stroke();
 
-        // Flashing borders when police are active
         if (policePresence) {
             let blinkSpeed = policeReactionTimer > 0 ? 300 : 150; 
             if (Math.floor(performance.now() / blinkSpeed) % 2 === 0) {
@@ -782,14 +745,12 @@
             }
         }
 
-        // Draw entities
         for (let ent of entities) {
             if (ASSETS[ent.asset]) {
                 ctx.drawImage(ASSETS[ent.asset], ent.x, ent.y, ent.width, ent.height);
             }
         }
 
-        // Draw freeze collision effects or player with flashing invulnerability
         if (isHitFreeze) {
             ctx.drawImage(ASSETS["explosion"], explosionPos.x - 10, explosionPos.y - 10, 40, 40);
             
@@ -824,7 +785,6 @@
         requestAnimationFrame(gameLoop);
     }
     
-    // Initial static canvas draw
     draw();
 </script>
 </body>
