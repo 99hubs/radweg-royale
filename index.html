@@ -326,7 +326,7 @@
 
     /** 
      * =========================================
-     * 2. CONFIGURATION & TIME-BASED PARAMETERS
+     * 2. CONFIGURATION & TIME-BASED PARAMETERS (Doubled Speeds)
      * =========================================
      */
     const CONFIG = {
@@ -337,9 +337,9 @@
         roadWidth: 220,         
         bikeLaneWidth: 90,     
         sidewalkWidth: 230,     
-        invincibilitySeconds: 3.0,     // 3 seconds of invulnerability
-        policeWarningSeconds: 1.5,     // 1.5 seconds warning before police fine
-        scorePerSecond: 60,            // Score increments reliably per second (matches 60 score/sec rate)
+        invincibilitySeconds: 3.0,     
+        policeWarningSeconds: 1.5,     
+        scorePerSecond: 120,           // DOUBLED from 60 to 120 score/sec
         pointsToNextLevel: 2000 
     };
 
@@ -358,18 +358,18 @@
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
 
-    // Rates adjusted to per-second intervals for stable mobile/desktop parity
+    // DOUBLED event and spawn frequencies across all neighborhoods
     const LEVELS = [
-        { name: "Prenzlauer Berg", obsPerSec: 0.12, carPerSec: 0.35, pedPerSec: 0.18, carSpeed: 750, erraticChance: 0.05, policeChance: 0.000 },
-        { name: "Mitte",           obsPerSec: 0.30, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 780, erraticChance: 0.08, policeChance: 0.000 },
-        { name: "Charlottenburg",  obsPerSec: 0.48, carPerSec: 1.05, pedPerSec: 0.60, carSpeed: 810, erraticChance: 0.10, policeChance: 0.00008 },
-        { name: "Schöneberg",      obsPerSec: 0.72, carPerSec: 1.40, pedPerSec: 0.90, carSpeed: 840, erraticChance: 0.12, policeChance: 0.00008 },
-        { name: "Friedrichshain",  obsPerSec: 0.96, carPerSec: 1.75, pedPerSec: 1.20, carSpeed: 870, erraticChance: 0.15, policeChance: 0.00012 },
-        { name: "Kreuzberg",       obsRate: 1.20,   carPerSec: 2.10, pedPerSec: 1.50, carSpeed: 900, erraticChance: 0.18, policeChance: 0.00012 },
-        { name: "Wedding",         obsPerSec: 1.50, carPerSec: 2.45, pedPerSec: 1.80, carSpeed: 930, erraticChance: 0.20, policeChance: 0.00016 },
-        { name: "Moabit",          obsPerSec: 1.80, carPerSec: 2.80, pedPerSec: 2.10, carSpeed: 960, erraticChance: 0.22, policeChance: 0.00016 },
-        { name: "Tempelhof",       obsPerSec: 2.10, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.00020 },
-        { name: "Neukölln",        obsPerSec: 2.70, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.00025 }
+        { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.000 },
+        { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.000 },
+        { name: "Charlottenburg",  obsPerSec: 0.96, carPerSec: 2.10, pedPerSec: 1.20, carSpeed: 810, erraticChance: 0.10, policeChance: 0.00016 },
+        { name: "Schöneberg",      obsPerSec: 1.44, carPerSec: 2.80, pedPerSec: 1.80, carSpeed: 840, erraticChance: 0.12, policeChance: 0.00016 },
+        { name: "Friedrichshain",  obsPerSec: 1.92, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 870, erraticChance: 0.15, policeChance: 0.00024 },
+        { name: "Kreuzberg",       obsPerSec: 2.40, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 900, erraticChance: 0.18, policeChance: 0.00024 },
+        { name: "Wedding",         obsPerSec: 3.00, carPerSec: 4.90, pedPerSec: 3.60, carSpeed: 930, erraticChance: 0.20, policeChance: 0.00032 },
+        { name: "Moabit",          obsPerSec: 3.60, carPerSec: 5.60, pedPerSec: 4.20, carSpeed: 960, erraticChance: 0.22, policeChance: 0.00032 },
+        { name: "Tempelhof",       obsPerSec: 4.20, carPerSec: 7.00, pedPerSec: 4.80, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.00040 },
+        { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.00050 }
     ];
 
     /** 
@@ -553,7 +553,7 @@
         const lvl = LEVELS[currentLevel];
         let obsRate = policePresence ? (lvl.obsPerSec * 0.2) : lvl.obsPerSec;
         
-        // Spawn predictable light poles every 2 seconds (~500px apart at 250px/sec scroll)
+        // Spawn predictable light poles every 2 seconds
         if (!window.lightPoleTimer) window.lightPoleTimer = 0;
         window.lightPoleTimer += dt;
         if (window.lightPoleTimer >= 2.0) {
@@ -561,7 +561,7 @@
             entities.push({ type: "obstacle", name: "Light Pole", asset: "lightpole", x: 302.5, y: -50, width: 15, height: 15, vx: 0, vy: CONFIG.scrollSpeed });
         }
 
-        // Random obstacle spawning based on probability per second
+        // Random obstacle spawning based on doubled probability per second
         if (Math.random() < obsRate * dt) {
             let obsDef = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
             let assetKey = obsDef.asset;
@@ -584,7 +584,7 @@
             }
         }
 
-        // Car and Bus spawner (Per-second rate)
+        // Car and Bus spawner (Doubled per-second rate)
         if (Math.random() < lvl.carPerSec * dt) {
             let isBus = Math.random() < 0.2; 
             let w = isBus ? 90 : 38; 
@@ -597,13 +597,13 @@
             if (!isOverlapping(newVehicle, ["car", "bus"], 15, 120)) entities.push(newVehicle);
         }
 
-        // Pedestrian spawner (Per-second rate)
+        // Pedestrian spawner (Doubled per-second rate)
         if (Math.random() < lvl.pedPerSec * dt) {
             let isErratic = Math.random() < lvl.erraticChance;
             entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
-        // Police patrol spawner (Per-second rate)
+        // Police patrol spawner (Doubled per-second rate)
         let policeChanceRate = lvl.policeChance || 0.0001;
         if (!policePresence && Math.random() < policeChanceRate * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
@@ -626,14 +626,13 @@
             }
         }
 
-        // Check if player left bike lane while police were active and warning expired
         if (policePresence && policeReactionTimer <= 0) {
             if (player.x < 220 || player.x + player.width > 310) hitPoliceConstraint = true;
         }
 
         if (hitObstacle || hitPoliceConstraint) {
             isHitFreeze = true;
-            hitFreezeTimer = 2.0; // Freeze for 2 seconds
+            hitFreezeTimer = 2.0; 
             bustedByPolice = hitPoliceConstraint;
             explosionPos = { x: player.x, y: player.y };
             
@@ -685,7 +684,7 @@
         if (player.x + player.width > CONFIG.width) player.x = CONFIG.width - player.width;
         if (player.invulnerableSeconds > 0) player.invulnerableSeconds -= dt;
 
-        // Score ticks strictly based on real elapsed seconds (Guarantees parity on mobile & desktop)
+        // Score increments at doubled speed (120 points per real second)
         score += CONFIG.scorePerSecond * dt;
         let newLevel = Math.floor(score / CONFIG.pointsToNextLevel);
         if (newLevel > currentLevel && newLevel < LEVELS.length) currentLevel = newLevel;
@@ -770,7 +769,7 @@
 
         // Flashing borders when police are active
         if (policePresence) {
-            let blinkSpeed = policeReactionTimer > 0 ? 300 : 150; // ms interval
+            let blinkSpeed = policeReactionTimer > 0 ? 300 : 150; 
             if (Math.floor(performance.now() / blinkSpeed) % 2 === 0) {
                 ctx.strokeStyle = policeReactionTimer > 0 ? "#ffd700" : "#ff1744";
                 ctx.lineWidth = 6;
@@ -817,7 +816,7 @@
         let dt = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
 
-        if (dt > 0.1) dt = 0.1; // Clamp max dt to prevent big time gaps if tab loses focus
+        if (dt > 0.1) dt = 0.1; 
 
         update(dt);
         draw();
