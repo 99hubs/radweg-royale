@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Meta Tags for Social Preview & SEO -->
     <title>Radweg Royale - Berlin Bike Lane Survival</title>
     <meta name="description" content="Survive the chaos of Berlin's bike lanes in this retro 8-bit arcade game!">
     <meta property="og:title" content="Radweg Royale">
     <meta property="og:description" content="Dodge BVG buses, tourists, and potholes. Can you survive Neukölln?">
     <meta property="og:type" content="website">
     
-    <!-- Inline Data URI Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
 
@@ -91,7 +89,6 @@
             z-index: 10;
         }
         
-        /* --- RETRO TYPOGRAPHY --- */
         .title-giant {
             font-size: clamp(40px, 10vw, 60px);
             line-height: 1;
@@ -137,7 +134,6 @@
         .rules-container p { margin: 8px 0; text-align: left; max-width: 100%; }
         .rules-container b { color: #ffcc00; }
 
-        /* --- CHUNKY RETRO BUTTONS --- */
         .chunky-btn {
             font-family: 'Lucida Console', Monaco, monospace;
             font-size: clamp(14px, 4vw, 20px);
@@ -165,7 +161,6 @@
             transform: none !important;
         }
 
-        /* Button Colors */
         .btn-yellow { background-color: #ffcc00; border-top-color: #ffe680; border-left-color: #ffe680; border-bottom-color: #b38f00; border-right-color: #b38f00; }
         .btn-blue   { background-color: #00b0ff; border-top-color: #80d8ff; border-left-color: #80d8ff; border-bottom-color: #007bb2; border-right-color: #007bb2; color: #fff; }
         .btn-red    { background-color: #ff1744; border-top-color: #ff8a80; border-left-color: #ff8a80; border-bottom-color: #b2102f; border-right-color: #b2102f; color: #fff; }
@@ -178,7 +173,6 @@
             margin: 0;
         }
 
-        /* --- TOUCH CONTROLS --- */
         .touch-zone-container {
             position: absolute;
             bottom: 2%; 
@@ -220,13 +214,11 @@
     </div>
     <div id="levelDisplay" class="hud-center hidden">LEVEL 1: PRENZLAUER BERG</div>
 
-    <!-- Mobile Touch Controls -->
     <div id="touchControls" class="touch-zone-container hidden">
         <div id="btnLeft" class="chunky-btn btn-grey touch-btn">◀ L</div>
         <div id="btnRight" class="chunky-btn btn-grey touch-btn">R ▶</div>
     </div>
 
-    <!-- Start Screen -->
     <div id="startScreen" class="ui-layer">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
@@ -237,7 +229,6 @@
         <p style="color:#aaa; margin-top:20px;">(PRESS ENTER)</p>
     </div>
 
-    <!-- Rules Screen -->
     <div id="rulesScreen" class="ui-layer hidden">
         <h2 style="color: #ffcc00; font-size: clamp(24px, 6vw, 30px); margin-top:0;">SURVIVAL GUIDE</h2>
         <div class="rules-container">
@@ -253,7 +244,6 @@
         </div>
     </div>
 
-    <!-- Pause Screen -->
     <div id="pauseScreen" class="ui-layer hidden">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
@@ -262,7 +252,6 @@
         </div>
     </div>
 
-    <!-- Game Over Screen -->
     <div id="gameOverScreen" class="ui-layer hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
@@ -273,11 +262,6 @@
 </div>
 
 <script>
-    /** 
-     * =========================================
-     * 1. HIGH-CONTRAST ASSET ENGINE
-     * =========================================
-     */
     const RAW_SVGS = {
         "player": `<svg width="20" height="40" viewBox="0 0 20 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="9" y="2" width="2" height="36" fill="#111"/><rect x="4" y="8" width="12" height="3" fill="#000"/><rect x="5" y="15" width="10" height="12" fill="#00ffff"/><rect x="6" y="11" width="8" height="7" fill="#ffff00"/><rect x="6" y="17" width="8" height="8" fill="#ff3333"/></svg>`,
         "explosion": `<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="15" width="30" height="10" fill="#ffea00"/><rect x="15" y="5" width="10" height="30" fill="#ffea00"/><rect x="10" y="10" width="20" height="20" fill="#ff5252"/><rect x="15" y="15" width="10" height="10" fill="#ffffff"/><rect x="0" y="0" width="8" height="8" fill="#ff5252"/><rect x="32" y="32" width="8" height="8" fill="#ffea00"/><rect x="32" y="0" width="8" height="8" fill="#ff5252"/><rect x="0" y="32" width="8" height="8" fill="#ffea00"/></svg>`,
@@ -320,16 +304,11 @@
         ASSETS[key] = img;
     }
 
-    /** 
-     * =========================================
-     * 2. CONFIGURATION & GAME PARAMETERS (9:16)
-     * =========================================
-     */
     const CONFIG = {
         width: 540,
         height: 960,
-        playerSpeed: 2.2,       
-        scrollSpeed: 4,         
+        playerSpeed: 250,       
+        scrollSpeed: 500,       // Set to 500 pixels per second
         roadWidth: 220,         
         bikeLaneWidth: 90,     
         sidewalkWidth: 230,     
@@ -354,24 +333,20 @@
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
 
+    // Recalibrated car speeds so they properly outpace scrollSpeed (500) and drive forward
     const LEVELS = [
-        { name: "Prenzlauer Berg", obsRate: 0.002, carRate: 0.005, pedRate: 0.003, carSpeed: 6.0, pedSpeed: 1.5, erraticChance: 0.05, policeChance: 0.000 },
-        { name: "Mitte",           obsRate: 0.005, carRate: 0.010, pedRate: 0.006, carSpeed: 6.5, pedSpeed: 1.5, erraticChance: 0.08, policeChance: 0.000 },
-        { name: "Charlottenburg",  obsRate: 0.008, carRate: 0.015, pedRate: 0.010, carSpeed: 7.0, pedSpeed: 2.0, erraticChance: 0.10, policeChance: 0.001 },
-        { name: "Schöneberg",      obsRate: 0.012, carRate: 0.020, pedRate: 0.015, carSpeed: 7.5, pedSpeed: 2.0, erraticChance: 0.12, policeChance: 0.001 },
-        { name: "Friedrichshain",  obsRate: 0.016, carRate: 0.025, pedRate: 0.020, carSpeed: 8.0, pedSpeed: 2.5, erraticChance: 0.15, policeChance: 0.0015 },
-        { name: "Kreuzberg",       obsRate: 0.020, carRate: 0.030, pedRate: 0.025, carSpeed: 8.5, pedSpeed: 2.5, erraticChance: 0.18, policeChance: 0.0015 },
-        { name: "Wedding",         obsRate: 0.025, carRate: 0.035, pedRate: 0.030, carSpeed: 9.0, pedSpeed: 3.0, erraticChance: 0.20, policeChance: 0.002 },
-        { name: "Moabit",          obsRate: 0.030, carRate: 0.040, pedRate: 0.035, carSpeed: 9.5, pedSpeed: 3.0, erraticChance: 0.22, policeChance: 0.002 },
-        { name: "Tempelhof",       obsRate: 0.035, carRate: 0.050, pedRate: 0.040, carSpeed: 10.0, pedSpeed: 3.5, erraticChance: 0.24, policeChance: 0.0025 },
-        { name: "Neukölln",        obsRate: 0.045, carRate: 0.060, pedRate: 0.050, carSpeed: 11.0, pedSpeed: 4.0, erraticChance: 0.25, policeChance: 0.003 }
+        { name: "Prenzlauer Berg", obsRate: 0.002, carRate: 0.006, pedRate: 0.003, carSpeed: 750, pedSpeed: 70, erraticChance: 0.05, policeChance: 0.000 },
+        { name: "Mitte",           obsRate: 0.005, carRate: 0.012, pedRate: 0.006, carSpeed: 780, pedSpeed: 70, erraticChance: 0.08, policeChance: 0.000 },
+        { name: "Charlottenburg",  obsRate: 0.008, carRate: 0.018, pedRate: 0.010, carSpeed: 810, pedSpeed: 90, erraticChance: 0.10, policeChance: 0.001 },
+        { name: "Schöneberg",      obsRate: 0.012, carRate: 0.024, pedRate: 0.015, carSpeed: 840, pedSpeed: 90, erraticChance: 0.12, policeChance: 0.001 },
+        { name: "Friedrichshain",  obsRate: 0.016, carRate: 0.030, pedRate: 0.020, carSpeed: 870, pedSpeed: 110, erraticChance: 0.15, policeChance: 0.0015 },
+        { name: "Kreuzberg",       obsRate: 0.020, carRate: 0.036, pedRate: 0.025, carSpeed: 900, pedSpeed: 110, erraticChance: 0.18, policeChance: 0.0015 },
+        { name: "Wedding",         obsRate: 0.025, carRate: 0.042, pedRate: 0.030, carSpeed: 930, pedSpeed: 130, erraticChance: 0.20, policeChance: 0.002 },
+        { name: "Moabit",          obsRate: 0.030, carRate: 0.048, pedRate: 0.035, carSpeed: 960, pedSpeed: 130, erraticChance: 0.22, policeChance: 0.002 },
+        { name: "Tempelhof",       obsRate: 0.035, carRate: 0.055, pedRate: 0.040, carSpeed: 1000, pedSpeed: 150, erraticChance: 0.24, policeChance: 0.0025 },
+        { name: "Neukölln",        obsRate: 0.045, carRate: 0.065, pedRate: 0.050, carSpeed: 1050, pedSpeed: 170, erraticChance: 0.25, policeChance: 0.003 }
     ];
 
-    /** 
-     * =========================================
-     * 3. GAME ENGINE & LOGIC
-     * =========================================
-     */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false; 
@@ -406,9 +381,10 @@
     let policePresence = false;
     let policeReactionTimer = CONFIG.policeWarningFrames;
 
+    let lastTime = 0;
+
     const player = { x: 255, y: 750, width: 20, height: 40, invulnerableFrames: 0 };
 
-    // Keyboard bindings
     window.addEventListener("keydown", (e) => {
         if (keys.hasOwnProperty(e.code)) {
             keys[e.code] = true;
@@ -435,7 +411,6 @@
         if (keys.hasOwnProperty(e.code)) keys[e.code] = false;
     });
 
-    // Touch logic
     function handleTouch(btn, isLeft, isActive) {
         if (prefersKeyboard) return; 
         
@@ -458,7 +433,6 @@
     btnRight.addEventListener("mousedown", (e) => { e.preventDefault(); handleTouch(btnRight, false, true); });
     btnRight.addEventListener("mouseup", (e) => { e.preventDefault(); handleTouch(btnRight, false, false); });
 
-    // Menu Navigation
     document.getElementById("startBtn").addEventListener("click", startGame);
     document.getElementById("startFromRulesBtn").addEventListener("click", startGame);
     document.getElementById("restartBtn").addEventListener("click", startGame);
@@ -489,6 +463,7 @@
         } else {
             pauseScreen.classList.add("hidden");
             if (!prefersKeyboard) touchControls.classList.remove("hidden");
+            lastTime = performance.now();
             requestAnimationFrame(gameLoop);
         }
     }
@@ -519,6 +494,7 @@
 
         updateHUD();
         isPlaying = true;
+        lastTime = performance.now();
         requestAnimationFrame(gameLoop);
     }
 
@@ -580,7 +556,7 @@
 
         if (Math.random() < lvl.pedRate) {
             let isErratic = Math.random() < lvl.erraticChance;
-            entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (1.5 + Math.random() * 1.5) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 2 - 1) });
+            entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
         if (!policePresence && Math.random() < lvl.policeChance) {
@@ -609,7 +585,7 @@
 
         if (hitObstacle || hitPoliceConstraint) {
             isHitFreeze = true;
-            hitFreezeTimer = 120; 
+            hitFreezeTimer = 2.0; 
             bustedByPolice = hitPoliceConstraint;
             explosionPos = { x: player.x, y: player.y };
             
@@ -636,9 +612,9 @@
         document.getElementById("finalScoreLevel").innerText = `Level ${currentLevel + 1}: ${LEVELS[currentLevel].name}`;
     }
 
-    function update() {
+    function update(dt) {
         if (isHitFreeze) {
-            hitFreezeTimer--;
+            hitFreezeTimer -= dt;
             if (hitFreezeTimer <= 0) {
                 isHitFreeze = false;
                 lives--;
@@ -654,11 +630,11 @@
             return; 
         }
 
-        if (keys.ArrowLeft) player.x -= CONFIG.playerSpeed;
-        if (keys.ArrowRight) player.x += CONFIG.playerSpeed;
+        if (keys.ArrowLeft) player.x -= CONFIG.playerSpeed * dt;
+        if (keys.ArrowRight) player.x += CONFIG.playerSpeed * dt;
         if (player.x < 0) player.x = 0;
         if (player.x + player.width > CONFIG.width) player.x = CONFIG.width - player.width;
-        if (player.invulnerableFrames > 0) player.invulnerableFrames--;
+        if (player.invulnerableFrames > 0) player.invulnerableFrames -= (dt * 60);
 
         score += CONFIG.scorePerTick;
         let newLevel = Math.floor(score / CONFIG.pointsToNextLevel);
@@ -693,15 +669,15 @@
                 ent.vy = blocked ? CONFIG.scrollSpeed : ent.originalVy; 
             }
 
-            ent.x += ent.vx;
-            ent.y += ent.vy;
+            ent.x += ent.vx * dt;
+            ent.y += ent.vy * dt;
             
             if (ent.y > CONFIG.height + 400 || ent.y < -400) entities.splice(i, 1);
         }
 
         if (policeFoundThisFrame) {
             policePresence = true;
-            if (policeReactionTimer > 0) policeReactionTimer--;
+            if (policeReactionTimer > 0) policeReactionTimer -= (dt * 60);
         } else {
             policePresence = false;
             policeReactionTimer = CONFIG.policeWarningFrames; 
@@ -727,8 +703,8 @@
         ctx.lineWidth = 4;
         
         ctx.beginPath();
-        let visualScroll = isHitFreeze ? 0 : (frameCount * CONFIG.scrollSpeed) % 40;
-        ctx.moveTo(CONFIG.roadWidth, visualScroll - 40);
+        let scrollOffset = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % 40;
+        ctx.moveTo(CONFIG.roadWidth, scrollOffset - 40);
         ctx.lineTo(CONFIG.roadWidth, CONFIG.height);
         ctx.stroke();
 
@@ -778,10 +754,17 @@
         }
     }
 
-    function gameLoop() {
+    function gameLoop(timestamp) {
         if (!isPlaying || isPaused) return;
-        update();
+
+        let dt = (timestamp - lastTime) / 1000;
+        lastTime = timestamp;
+
+        if (dt > 0.1) dt = 0.1;
+
+        update(dt);
         draw();
+        
         requestAnimationFrame(gameLoop);
     }
     
