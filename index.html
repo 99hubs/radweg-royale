@@ -326,20 +326,20 @@
 
     /** 
      * =========================================
-     * 2. CONFIGURATION & DELTA-TIME PARAMETERS
+     * 2. CONFIGURATION & TIME-BASED PARAMETERS
      * =========================================
      */
     const CONFIG = {
         width: 540,
         height: 960,
-        playerSpeed: 250,       // Movement velocity scaling for delta time
-        scrollSpeed: 500,       // Fixed high speed matching user request (pixels/sec)
+        playerSpeed: 250,       
+        scrollSpeed: 500,       
         roadWidth: 220,         
         bikeLaneWidth: 90,     
         sidewalkWidth: 230,     
-        invincibilityFrames: 180,
-        policeWarningFrames: 90,
-        scorePerTick: 1,        
+        invincibilitySeconds: 3.0,     // 3 seconds of invulnerability
+        policeWarningSeconds: 1.5,     // 1.5 seconds warning before police fine
+        scorePerSecond: 60,            // Score increments reliably per second (matches 60 score/sec rate)
         pointsToNextLevel: 2000 
     };
 
@@ -358,18 +358,18 @@
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
 
-    // Difficulty scaling across Berlin neighborhoods
+    // Rates adjusted to per-second intervals for stable mobile/desktop parity
     const LEVELS = [
-        { name: "Prenzlauer Berg", obsRate: 0.002, carRate: 0.006, pedRate: 0.003, carSpeed: 750, pedSpeed: 70, erraticChance: 0.05, policeChance: 0.000 },
-        { name: "Mitte",           obsRate: 0.005, carRate: 0.012, pedRate: 0.006, carSpeed: 780, pedSpeed: 70, erraticChance: 0.08, policeChance: 0.000 },
-        { name: "Charlottenburg",  obsRate: 0.008, carRate: 0.018, pedRate: 0.010, carSpeed: 810, pedSpeed: 90, erraticChance: 0.10, policeChance: 0.001 },
-        { name: "Schöneberg",      obsRate: 0.012, carRate: 0.024, pedRate: 0.015, carSpeed: 840, pedSpeed: 90, erraticChance: 0.12, policeChance: 0.001 },
-        { name: "Friedrichshain",  obsRate: 0.016, carRate: 0.030, pedRate: 0.020, carSpeed: 870, pedSpeed: 110, erraticChance: 0.15, policeChance: 0.0015 },
-        { name: "Kreuzberg",       obsRate: 0.020, carRate: 0.036, pedRate: 0.025, carSpeed: 900, pedSpeed: 110, erraticChance: 0.18, policeChance: 0.0015 },
-        { name: "Wedding",         obsRate: 0.025, carRate: 0.042, pedRate: 0.030, carSpeed: 930, pedSpeed: 130, erraticChance: 0.20, policeChance: 0.002 },
-        { name: "Moabit",          obsRate: 0.030, carRate: 0.048, pedRate: 0.035, carSpeed: 960, pedSpeed: 130, erraticChance: 0.22, policeChance: 0.002 },
-        { name: "Tempelhof",       obsRate: 0.035, carRate: 0.055, pedRate: 0.040, carSpeed: 1000, pedSpeed: 150, erraticChance: 0.24, policeChance: 0.0025 },
-        { name: "Neukölln",        obsRate: 0.045, carRate: 0.065, pedRate: 0.050, carSpeed: 1050, pedSpeed: 170, erraticChance: 0.25, policeChance: 0.003 }
+        { name: "Prenzlauer Berg", obsPerSec: 0.12, carPerSec: 0.35, pedPerSec: 0.18, carSpeed: 750, erraticChance: 0.05, policeChance: 0.000 },
+        { name: "Mitte",           obsPerSec: 0.30, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 780, erraticChance: 0.08, policeChance: 0.000 },
+        { name: "Charlottenburg",  obsPerSec: 0.48, carPerSec: 1.05, pedPerSec: 0.60, carSpeed: 810, erraticChance: 0.10, policeChance: 0.00008 },
+        { name: "Schöneberg",      obsPerSec: 0.72, carPerSec: 1.40, pedPerSec: 0.90, carSpeed: 840, erraticChance: 0.12, policeChance: 0.00008 },
+        { name: "Friedrichshain",  obsPerSec: 0.96, carPerSec: 1.75, pedPerSec: 1.20, carSpeed: 870, erraticChance: 0.15, policeChance: 0.00012 },
+        { name: "Kreuzberg",       obsRate: 1.20,   carPerSec: 2.10, pedPerSec: 1.50, carSpeed: 900, erraticChance: 0.18, policeChance: 0.00012 },
+        { name: "Wedding",         obsPerSec: 1.50, carPerSec: 2.45, pedPerSec: 1.80, carSpeed: 930, erraticChance: 0.20, policeChance: 0.00016 },
+        { name: "Moabit",          obsPerSec: 1.80, carPerSec: 2.80, pedPerSec: 2.10, carSpeed: 960, erraticChance: 0.22, policeChance: 0.00016 },
+        { name: "Tempelhof",       obsPerSec: 2.10, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.00020 },
+        { name: "Neukölln",        obsPerSec: 2.70, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.00025 }
     ];
 
     /** 
@@ -411,17 +411,16 @@
     let entities = [];
     
     let policePresence = false;
-    let policeReactionTimer = CONFIG.policeWarningFrames;
+    let policeReactionTimer = CONFIG.policeWarningSeconds;
 
     let lastTime = 0;
 
-    const player = { x: 255, y: 750, width: 20, height: 40, invulnerableFrames: 0 };
+    const player = { x: 255, y: 750, width: 20, height: 40, invulnerableSeconds: 0 };
 
     // Keyboard event listeners
     window.addEventListener("keydown", (e) => {
         if (keys.hasOwnProperty(e.code)) {
             keys[e.code] = true;
-            // Detect user preference for keyboard -> hides mobile touch zones gracefully
             if (!prefersKeyboard && (e.code === 'ArrowLeft' || e.code === 'ArrowRight')) {
                 prefersKeyboard = true;
                 touchControls.classList.add("keyboard-mode");
@@ -523,10 +522,10 @@
         isHitFreeze = false;
         
         policePresence = false;
-        policeReactionTimer = CONFIG.policeWarningFrames;
+        policeReactionTimer = CONFIG.policeWarningSeconds;
         
         player.x = 255;
-        player.invulnerableFrames = 0;
+        player.invulnerableSeconds = 0;
 
         updateHUD();
         isPlaying = true;
@@ -549,18 +548,21 @@
         return false;
     }
 
-    // Entity spawner for obstacles, traffic, and police
-    function spawnEntity() {
+    // Entity spawner utilizing real-world seconds (dt) for mobile/desktop timing parity
+    function spawnEntity(dt) {
         const lvl = LEVELS[currentLevel];
-        let adjustedObsRate = policePresence ? (lvl.obsRate * 0.2) : lvl.obsRate;
+        let obsRate = policePresence ? (lvl.obsPerSec * 0.2) : lvl.obsPerSec;
         
-        // Spawn predictable light poles every 120 ticks along the boundary line
-        if (frameCount % 120 === 0) {
+        // Spawn predictable light poles every 2 seconds (~500px apart at 250px/sec scroll)
+        if (!window.lightPoleTimer) window.lightPoleTimer = 0;
+        window.lightPoleTimer += dt;
+        if (window.lightPoleTimer >= 2.0) {
+            window.lightPoleTimer = 0;
             entities.push({ type: "obstacle", name: "Light Pole", asset: "lightpole", x: 302.5, y: -50, width: 15, height: 15, vx: 0, vy: CONFIG.scrollSpeed });
         }
 
-        // Random obstacle spawning
-        if (Math.random() < adjustedObsRate) {
+        // Random obstacle spawning based on probability per second
+        if (Math.random() < obsRate * dt) {
             let obsDef = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
             let assetKey = obsDef.asset;
             if (obsDef.name === "Parked Car") assetKey = CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
@@ -582,8 +584,8 @@
             }
         }
 
-        // Car and Bus spawner (Driving down the road lane)
-        if (Math.random() < lvl.carRate) {
+        // Car and Bus spawner (Per-second rate)
+        if (Math.random() < lvl.carPerSec * dt) {
             let isBus = Math.random() < 0.2; 
             let w = isBus ? 90 : 38; 
             let h = isBus ? 240 : 75;
@@ -595,14 +597,15 @@
             if (!isOverlapping(newVehicle, ["car", "bus"], 15, 120)) entities.push(newVehicle);
         }
 
-        // Pedestrian spawner
-        if (Math.random() < lvl.pedRate) {
+        // Pedestrian spawner (Per-second rate)
+        if (Math.random() < lvl.pedPerSec * dt) {
             let isErratic = Math.random() < lvl.erraticChance;
             entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
-        // Police patrol spawner
-        if (!policePresence && Math.random() < lvl.policeChance) {
+        // Police patrol spawner (Per-second rate)
+        let policeChanceRate = lvl.policeChance || 0.0001;
+        if (!policePresence && Math.random() < policeChanceRate * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
             entities.push({ type: "police", name: "Polizei", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
         }
@@ -610,7 +613,7 @@
 
     // Collision detection logic
     function checkCollisions() {
-        if (player.invulnerableFrames > 0) return;
+        if (player.invulnerableSeconds > 0) return;
 
         let hitObstacle = false;
         let hitPoliceConstraint = false;
@@ -623,7 +626,7 @@
             }
         }
 
-        // Check if player left the bike lane while police were active and warning expired
+        // Check if player left bike lane while police were active and warning expired
         if (policePresence && policeReactionTimer <= 0) {
             if (player.x < 220 || player.x + player.width > 310) hitPoliceConstraint = true;
         }
@@ -657,14 +660,14 @@
         document.getElementById("finalScoreLevel").innerText = `Level ${currentLevel + 1}: ${LEVELS[currentLevel].name}`;
     }
 
-    // Main update loop using delta time (dt) for uniform speed across devices
+    // Main update loop using exact time delta (dt in seconds)
     function update(dt) {
         if (isHitFreeze) {
             hitFreezeTimer -= dt;
             if (hitFreezeTimer <= 0) {
                 isHitFreeze = false;
                 lives--;
-                player.invulnerableFrames = CONFIG.invincibilityFrames;
+                player.invulnerableSeconds = CONFIG.invincibilitySeconds;
                 player.x = 255; 
                 updateHUD();
 
@@ -680,13 +683,14 @@
         if (keys.ArrowRight) player.x += CONFIG.playerSpeed * dt;
         if (player.x < 0) player.x = 0;
         if (player.x + player.width > CONFIG.width) player.x = CONFIG.width - player.width;
-        if (player.invulnerableFrames > 0) player.invulnerableFrames -= (dt * 60);
+        if (player.invulnerableSeconds > 0) player.invulnerableSeconds -= dt;
 
-        score += CONFIG.scorePerTick;
+        // Score ticks strictly based on real elapsed seconds (Guarantees parity on mobile & desktop)
+        score += CONFIG.scorePerSecond * dt;
         let newLevel = Math.floor(score / CONFIG.pointsToNextLevel);
         if (newLevel > currentLevel && newLevel < LEVELS.length) currentLevel = newLevel;
 
-        spawnEntity();
+        spawnEntity(dt);
 
         let policeFoundThisFrame = false;
         
@@ -695,7 +699,7 @@
             
             if (ent.type === "police") {
                 policeFoundThisFrame = true;
-                ent.asset = (frameCount % 20 < 10) ? "police1" : "police2";
+                ent.asset = (Math.floor(performance.now() / 150) % 2 === 0) ? "police1" : "police2";
             }
             
             // Smart traffic jam / braking AI
@@ -724,14 +728,14 @@
 
         if (policeFoundThisFrame) {
             policePresence = true;
-            if (policeReactionTimer > 0) policeReactionTimer -= (dt * 60);
+            if (policeReactionTimer > 0) policeReactionTimer -= dt;
         } else {
             policePresence = false;
-            policeReactionTimer = CONFIG.policeWarningFrames; 
+            policeReactionTimer = CONFIG.policeWarningSeconds; 
         }
 
         checkCollisions();
-        if (frameCount % 30 === 0) updateHUD();
+        updateHUD();
         frameCount++;
     }
 
@@ -766,8 +770,8 @@
 
         // Flashing borders when police are active
         if (policePresence) {
-            let blinkSpeed = policeReactionTimer > 0 ? 15 : 10;
-            if (Math.floor(frameCount / blinkSpeed) % 2 === 0) {
+            let blinkSpeed = policeReactionTimer > 0 ? 300 : 150; // ms interval
+            if (Math.floor(performance.now() / blinkSpeed) % 2 === 0) {
                 ctx.strokeStyle = policeReactionTimer > 0 ? "#ffd700" : "#ff1744";
                 ctx.lineWidth = 6;
                 ctx.beginPath();
@@ -786,7 +790,7 @@
             }
         }
 
-        // Draw freeze collision effects or player
+        // Draw freeze collision effects or player with flashing invulnerability
         if (isHitFreeze) {
             ctx.drawImage(ASSETS["explosion"], explosionPos.x - 10, explosionPos.y - 10, 40, 40);
             
@@ -802,7 +806,7 @@
                 ctx.shadowColor = "transparent";
                 ctx.textAlign = "left"; 
             }
-        } else if (player.invulnerableFrames % 10 < 5) { 
+        } else if (player.invulnerableSeconds <= 0 || Math.floor(performance.now() / 80) % 2 === 0) { 
             ctx.drawImage(ASSETS["player"], player.x, player.y, player.width, player.height);
         }
     }
@@ -813,7 +817,7 @@
         let dt = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
 
-        if (dt > 0.1) dt = 0.1; // Limit max dt jumps
+        if (dt > 0.1) dt = 0.1; // Clamp max dt to prevent big time gaps if tab loses focus
 
         update(dt);
         draw();
