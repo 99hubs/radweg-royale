@@ -4,14 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
-    <!-- Meta Tags for Social Preview & SEO -->
     <title>Radweg Royale - Berlin Bike Lane Survival</title>
     <meta name="description" content="Survive the chaos of Berlin's bike lanes in this retro 8-bit arcade game!">
     <meta property="og:title" content="Radweg Royale">
     <meta property="og:description" content="Dodge BVG buses, tourists, and potholes. Can you survive Neukölln?">
     <meta property="og:type" content="website">
     
-    <!-- Inline Data URI Favicon -->
     <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
 
@@ -62,6 +60,19 @@
             z-index: 20;
         }
         
+        .full-screen-menu {
+            background-color: #111;
+            z-index: 30;
+            pointer-events: auto; 
+        }
+
+        .scrollable-menu {
+            justify-content: flex-start;
+            overflow-y: auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+        
         .hud {
             position: absolute;
             top: 15px;
@@ -106,6 +117,7 @@
             margin-bottom: 40px;
             text-shadow: 2px 2px 0px #000;
             letter-spacing: 1px;
+            text-align: center;
         }
         .score-giant {
             font-size: clamp(50px, 12vw, 70px);
@@ -122,19 +134,22 @@
         }
         
         .rules-container {
-            width: 85%;
+            width: 100%;
+            max-width: 400px;
             background: rgba(0, 0, 0, 0.5);
             border: 2px solid #555;
             padding: 15px;
             margin-bottom: 20px;
             text-align: left;
-            font-size: clamp(11px, 3vw, 14px);
-            line-height: 1.5;
+            font-size: clamp(12px, 3.5vw, 15px);
+            line-height: 1.6;
             color: #ddd;
             text-shadow: 1px 1px 0px #000;
+            box-sizing: border-box;
         }
-        .rules-container p { margin: 8px 0; text-align: left; max-width: 100%; }
+        .rules-container p { margin: 12px 0; text-align: left; max-width: 100%; }
         .rules-container b { color: #ffcc00; }
+        .rules-title { color: #ffcc00; font-size: clamp(24px, 6vw, 30px); margin-top: 0; margin-bottom: 15px; text-align: center;}
 
         .chunky-btn {
             font-family: 'Lucida Console', Monaco, monospace;
@@ -162,6 +177,12 @@
             box-shadow: 4px 4px 0px #000 !important;
             transform: none !important;
         }
+        
+        .btn-giant {
+            font-size: clamp(24px, 6vw, 32px);
+            padding: 18px 40px;
+            margin-bottom: 15px;
+        }
 
         .btn-yellow { background-color: #ffcc00; border-top-color: #ffe680; border-left-color: #ffe680; border-bottom-color: #b38f00; border-right-color: #b38f00; }
         .btn-blue   { background-color: #00b0ff; border-top-color: #80d8ff; border-left-color: #80d8ff; border-bottom-color: #007bb2; border-right-color: #007bb2; color: #fff; }
@@ -173,35 +194,42 @@
             padding: 6px 12px;
             font-size: clamp(10px, 3vw, 14px);
             margin: 0;
+            pointer-events: auto;
         }
 
         .touch-zone-container {
             position: absolute;
-            bottom: 2%; 
+            bottom: 0; 
             left: 0;
             width: 100%;
-            height: 26%; 
+            height: 39%; 
             display: flex;
-            justify-content: space-between;
             z-index: 15;
-            pointer-events: none; 
-            transition: opacity 0.4s ease-out; 
+            transition: opacity 0.1s ease-out; 
         }
         .touch-zone-container.keyboard-mode { opacity: 0 !important; }
-        .touch-zone-container.keyboard-mode .touch-btn { pointer-events: none; }
+        .touch-zone-container.keyboard-mode .touch-area { pointer-events: none; }
 
-        .touch-btn {
-            width: 35%; 
-            margin: 0 15px; 
+        .touch-area {
+            width: 50%;
+            height: 100%;
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: clamp(18px, 5vw, 24px);
+            pointer-events: auto; 
             user-select: none;
+        }
+
+        .arrow-btn {
+            pointer-events: none; 
+            font-size: clamp(20px, 6vw, 32px);
+            padding: 15px 25px;
+            margin: 0;
         }
 
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
+        .menu-footer { margin-top: 20px; text-align: center; color: #aaa; }
     </style>
 </head>
 <body>
@@ -217,27 +245,40 @@
     <div id="levelDisplay" class="hud-center hidden">LEVEL 1: PRENZLAUER BERG</div>
 
     <div id="touchControls" class="touch-zone-container hidden">
-        <div id="btnLeft" class="chunky-btn btn-grey touch-btn">◀ L</div>
-        <div id="btnRight" class="chunky-btn btn-grey touch-btn">R ▶</div>
+        <div id="btnLeft" class="touch-area">
+            <div class="chunky-btn btn-grey arrow-btn">◀</div>
+        </div>
+        <div id="btnRight" class="touch-area">
+            <div class="chunky-btn btn-grey arrow-btn">▶</div>
+        </div>
     </div>
 
-    <div id="startScreen" class="ui-layer">
+    <!-- Start Screen -->
+    <div id="startScreen" class="ui-layer full-screen-menu">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
         
-        <button id="startBtn" class="chunky-btn btn-yellow" disabled>LOADING ASSETS...</button>
+        <button id="startBtn" class="chunky-btn btn-yellow btn-giant" disabled>LOADING...</button>
         <button id="showRulesBtn" class="chunky-btn btn-blue hidden">HOW TO PLAY</button>
         
-        <p style="color:#aaa; margin-top:20px;">(PRESS ENTER)</p>
+        <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 
-    <div id="rulesScreen" class="ui-layer hidden">
-        <h2 style="color: #ffcc00; font-size: clamp(24px, 6vw, 30px); margin-top:0;">SURVIVAL GUIDE</h2>
+    <!-- Rules Screen -->
+    <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu hidden">
+        <h2 class="rules-title">SURVIVAL GUIDE</h2>
         <div class="rules-container">
-            <p>🕹️ <b>CONTROLS:</b> Use Left/Right keys or tap bottom screen buttons to steer.</p>
-            <p>🛣️ <b>THE STREET:</b> Left = Road (Cars). Right = Sidewalk (Pedestrians). Center = Bike Lane.</p>
-            <p>🚌 <b>BVG BUSES:</b> They drive strictly on the edge of the bike lane. No room to squeeze past!</p>
-            <p>🚓 <b>POLIZEI:</b> If police appear, borders flash. You have <b>1.5 seconds</b> to return to the bike lane or get BUSTED!</p>
+            <p>Welcome to the wild streets of Berlin! You are a brave cyclist commuting through the city's chaotic neighborhoods, starting in <b>Prenzlauer Berg</b> and surviving all the way to <b>Neukölln</b>.</p>
+            <p>But the bike lanes here aren't safe havens. They are warzones.</p>
+            <hr style="border:1px solid #444;">
+            <p>🕹️ <b>CONTROLS:</b> Use Left/Right keys or tap the large left/right screen zones to steer.</p>
+            <p>🛣️ <b>THE STREET:</b> Left = Road (Cars). Right = Sidewalk. Center = Bike Lane.</p>
+            <p>🚌 <b>BVG BUSES:</b> The apex predators of the asphalt. They drive exactly on the edge of the bike lane. Do not mess with them.</p>
+            <p>🚗 <b>CARS & VANS:</b> Standard obstacles blocking your righteous path.</p>
+            <p>🚶 <b>TOURISTS & PEDESTRIANS:</b> Lost in thought (or their phones), they wander into the lane. However, afraid of traffic, they will <b>stop right at the edge of the car road</b>.</p>
+            <p>🚧 <b>CLUTTER:</b> Potholes, E-Scooters, and Patio Tables.</p>
+            <p>🚓 <b>DIE POLIZEI:</b> If the borders start flashing, the police are watching! You have exactly <b>1.5 seconds</b> to get back into the designated bike lane, or you will be BUSTED.</p>
+            <hr style="border:1px solid #444;">
             <p>💥 <b>GAME OVER:</b> Hit 3 obstacles or get busted 3 times, and you're out.</p>
         </div>
         <div class="flex-row">
@@ -246,6 +287,7 @@
         </div>
     </div>
 
+    <!-- Pause Screen -->
     <div id="pauseScreen" class="ui-layer hidden">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
@@ -254,12 +296,13 @@
         </div>
     </div>
 
-    <div id="gameOverScreen" class="ui-layer hidden">
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="ui-layer full-screen-menu hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
-        <div class="level-info" id="finalScoreLevel">Level 1: Prenzlauer Berg</div>
-        <button id="restartBtn" class="chunky-btn btn-yellow">TRY AGAIN</button>
-        <p style="color:#aaa; margin-top:20px;">(PRESS ENTER)</p>
+        <div class="subtitle" id="finalScoreLevel" style="margin-bottom: 30px;">Level 1: Prenzlauer Berg</div>
+        <button id="restartBtn" class="chunky-btn btn-yellow btn-giant">TRY AGAIN</button>
+        <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 </div>
 
@@ -315,8 +358,8 @@
     const CONFIG = {
         width: 540,
         height: 960,
-        playerSpeed: 180,
-        scrollSpeed: 500,
+        playerSpeed: 180,       
+        scrollSpeed: 500,       
         roadWidth: 220,         
         bikeLaneWidth: 90,     
         sidewalkWidth: 230,     
@@ -345,16 +388,16 @@
      * Level progression data defining spawn rates and speeds per Berlin neighborhood.
      */
     const LEVELS = [
-        { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.02 },
-        { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.05 },
-        { name: "Charlottenburg",  obsPerSec: 0.96, carPerSec: 2.10, pedPerSec: 1.20, carSpeed: 810, erraticChance: 0.10, policeChance: 0.10 },
-        { name: "Schöneberg",      obsPerSec: 1.44, carPerSec: 2.80, pedPerSec: 1.80, carSpeed: 840, erraticChance: 0.12, policeChance: 0.12 },
-        { name: "Friedrichshain",  obsPerSec: 1.92, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 870, erraticChance: 0.15, policeChance: 0.13 },
-        { name: "Kreuzberg",       obsPerSec: 2.40, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 900, erraticChance: 0.18, policeChance: 0.15 },
-        { name: "Wedding",         obsPerSec: 3.00, carPerSec: 4.90, pedPerSec: 3.60, carSpeed: 930, erraticChance: 0.20, policeChance: 0.18 },
-        { name: "Moabit",          obsPerSec: 3.60, carPerSec: 5.60, pedPerSec: 4.20, carSpeed: 960, erraticChance: 0.22, policeChance: 0.20 },
-        { name: "Tempelhof",       obsPerSec: 4.20, carPerSec: 7.00, pedPerSec: 4.80, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.22 },
-        { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.24 }
+        { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.05 },
+        { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.08 },
+        { name: "Charlottenburg",  obsPerSec: 0.96, carPerSec: 2.10, pedPerSec: 1.20, carSpeed: 810, erraticChance: 0.10, policeChance: 0.12 },
+        { name: "Schöneberg",      obsPerSec: 1.44, carPerSec: 2.80, pedPerSec: 1.80, carSpeed: 840, erraticChance: 0.12, policeChance: 0.15 },
+        { name: "Friedrichshain",  obsPerSec: 1.92, carPerSec: 3.50, pedPerSec: 2.40, carSpeed: 870, erraticChance: 0.15, policeChance: 0.18 },
+        { name: "Kreuzberg",       obsPerSec: 2.40, carPerSec: 4.20, pedPerSec: 3.00, carSpeed: 900, erraticChance: 0.18, policeChance: 0.22 },
+        { name: "Wedding",         obsPerSec: 3.00, carPerSec: 4.90, pedPerSec: 3.60, carSpeed: 930, erraticChance: 0.20, policeChance: 0.25 },
+        { name: "Moabit",          obsPerSec: 3.60, carPerSec: 5.60, pedPerSec: 4.20, carSpeed: 960, erraticChance: 0.22, policeChance: 0.28 },
+        { name: "Tempelhof",       obsPerSec: 4.20, carPerSec: 7.00, pedPerSec: 4.80, carSpeed: 1000, erraticChance: 0.24, policeChance: 0.32 },
+        { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.40 }
     ];
 
     const canvas = document.getElementById("gameCanvas");
@@ -428,7 +471,7 @@
         else keys.ArrowRight = isActive;
 
         if (isActive) {
-            unifiedTouchOpacity = Math.max(0, unifiedTouchOpacity - 0.1);
+            unifiedTouchOpacity = Math.max(0, unifiedTouchOpacity - 0.2);
             touchControls.style.opacity = unifiedTouchOpacity;
         }
     }
@@ -687,6 +730,11 @@
 
             ent.x += ent.vx * dt;
             ent.y += ent.vy * dt;
+
+            if (ent.type === "pedestrian" && ent.x <= CONFIG.roadWidth) {
+                ent.x = CONFIG.roadWidth;
+                ent.vx = 0;
+            }
             
             if (ent.y > CONFIG.height + 400 || ent.y < -400) entities.splice(i, 1);
         }
