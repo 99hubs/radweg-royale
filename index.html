@@ -8,6 +8,9 @@
     <meta name="description" content="Survive the chaos of Berlin's bike lanes in this retro arcade game!">
     <meta property="og:title" content="Radweg Royale">
     
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
+    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
+
     <style>
         body {
             margin: 0;
@@ -58,19 +61,21 @@
             z-index: 30;
             pointer-events: auto; 
             background-color: #111; 
-            /* ADD YOUR MENU BACKGROUND IMAGE HERE */
-            background-image: url('assets/menu_bg.png'); 
             background-size: cover;
             background-position: center;
+            background-repeat: no-repeat;
         }
+
+        /* Distinct background configurations for each UI screen */
+        .bg-start { background-image: url('assets/start_bg.png'); }
+        .bg-rules { background-image: url('assets/rules_bg.png'); }
+        .bg-gameover { background-image: url('assets/gameover_bg.png'); }
 
         .scrollable-menu {
             justify-content: flex-start;
             overflow-y: auto;
             padding: 40px 20px;
             box-sizing: border-box;
-            background-image: none; /* Usually better to keep text screens solid for readability */
-            background-color: #111;
         }
         
         .hud {
@@ -237,7 +242,8 @@
         </div>
     </div>
 
-    <div id="startScreen" class="ui-layer full-screen-menu">
+    <!-- Start Screen -->
+    <div id="startScreen" class="ui-layer full-screen-menu bg-start">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
         
@@ -247,7 +253,8 @@
         <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 
-    <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu hidden">
+    <!-- Rules Screen -->
+    <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu bg-rules hidden">
         <h2 class="rules-title">SURVIVAL GUIDE</h2>
         <div class="rules-container">
             <p>Welcome to the wild streets of Berlin! You are a brave cyclist commuting through the city's chaotic neighborhoods, starting in <b>Prenzlauer Berg</b> and surviving all the way to <b>Neukölln</b>.</p>
@@ -266,6 +273,7 @@
         </div>
     </div>
 
+    <!-- Pause Screen -->
     <div id="pauseScreen" class="ui-layer hidden" style="background: rgba(0,0,0,0.8);">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
@@ -274,7 +282,8 @@
         </div>
     </div>
 
-    <div id="gameOverScreen" class="ui-layer full-screen-menu hidden">
+    <!-- Game Over Screen -->
+    <div id="gameOverScreen" class="ui-layer full-screen-menu bg-gameover hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
         <div class="subtitle" id="finalScoreLevel" style="margin-bottom: 30px;">Level 1: Prenzlauer Berg</div>
@@ -297,7 +306,7 @@
         "police1": "assets/police1.png",
         "police2": "assets/police2.png",
         "lightpole": "assets/lightpole.png",
-        "game_bg": "assets/game_bg.png" // The repeating street background
+        "game_bg": "assets/game_bg.png"
     };
 
     // The entities that require 3 visual variants each
@@ -375,7 +384,6 @@
         { name: "Dumpster", w: 40, h: 40, assetBase: "dumpster" },
         { name: "E-Scooter", w: 15, h: 30, assetBase: "scooter" },
         { name: "Pothole", w: 25, h: 25, assetBase: "pothole" },
-        // Example: The bush hitbox is 35x35, but we draw it visually as 50x50, shifted up and left
         { name: "Bush", w: 35, h: 35, drawW: 50, drawH: 50, offsetX: -7.5, offsetY: -15, assetBase: "bush" },
         { name: "Patio Table", w: 40, h: 40, assetBase: "table" },
         { name: "Delivery Van", w: 45, h: 120, assetBase: "van" }
@@ -622,7 +630,6 @@
 
         if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
-            // Police are animated (toggled later), so assign base police1 initially
             entities.push({ type: "police", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
         }
     }
@@ -734,7 +741,6 @@
             ent.x += ent.vx * dt;
             ent.y += ent.vy * dt;
 
-            // Pedestrian bounds check
             if (ent.type === "pedestrian" && ent.x <= CONFIG.roadWidth) {
                 ent.x = CONFIG.roadWidth;
                 ent.vx = 0;
@@ -759,17 +765,14 @@
     function draw() {
         let bgImg = ASSETS["game_bg"];
         
-        // If a game background is loaded, render it scrolling
         if (bgImg && bgImg.complete && bgImg.naturalWidth !== 0) {
-            let tileH = bgImg.height || 512; // Dynamic tile height detection
+            let tileH = bgImg.height || 512; 
             let scrollOffset = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % tileH;
             
-            // Loop background rendering to cover the screen plus overhang
             for(let y = scrollOffset - tileH; y < CONFIG.height; y += tileH) {
                 ctx.drawImage(bgImg, 0, y, CONFIG.width, tileH);
             }
         } else {
-            // Fallback rendering if no external background is available yet
             ctx.fillStyle = "#2b2b2b"; 
             ctx.fillRect(0, 0, CONFIG.roadWidth, CONFIG.height);
             ctx.fillStyle = "#613838";  
@@ -809,7 +812,6 @@
 
         for (let ent of entities) {
             if (ASSETS[ent.asset]) {
-                // Support visual overhangs decoupled from the hitbox width/height
                 let dW = ent.drawW || ent.width;
                 let dH = ent.drawH || ent.height;
                 let dX = ent.x + (ent.offsetX || 0);
@@ -843,8 +845,10 @@
 
     function gameLoop(timestamp) {
         if (!isPlaying || isPaused) return;
+
         let dt = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
+
         if (dt > 0.1) dt = 0.1; 
 
         update(dt);
