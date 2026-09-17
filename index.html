@@ -5,14 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     
     <title>Radweg Royale - Berlin Bike Lane Survival</title>
-    <meta name="description" content="Survive the chaos of Berlin's bike lanes in this retro 8-bit arcade game!">
+    <meta name="description" content="Survive the chaos of Berlin's bike lanes in this retro arcade game!">
     <meta property="og:title" content="Radweg Royale">
-    <meta property="og:description" content="Dodge BVG buses, tourists, and potholes. Can you survive Neukölln?">
-    <meta property="og:type" content="website">
     
-    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
-    <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
-
     <style>
         body {
             margin: 0;
@@ -56,14 +51,17 @@
             flex-direction: column;
             justify-content: center;
             align-items: center;
-            background: rgba(17, 17, 17, 0.90);
             z-index: 20;
         }
         
         .full-screen-menu {
-            background-color: #111;
             z-index: 30;
             pointer-events: auto; 
+            background-color: #111; 
+            /* ADD YOUR MENU BACKGROUND IMAGE HERE */
+            background-image: url('assets/menu_bg.png'); 
+            background-size: cover;
+            background-position: center;
         }
 
         .scrollable-menu {
@@ -71,6 +69,8 @@
             overflow-y: auto;
             padding: 40px 20px;
             box-sizing: border-box;
+            background-image: none; /* Usually better to keep text screens solid for readability */
+            background-color: #111;
         }
         
         .hud {
@@ -136,7 +136,7 @@
         .rules-container {
             width: 100%;
             max-width: 400px;
-            background: rgba(0, 0, 0, 0.5);
+            background: rgba(0, 0, 0, 0.7);
             border: 2px solid #555;
             padding: 15px;
             margin-bottom: 20px;
@@ -178,24 +178,14 @@
             transform: none !important;
         }
         
-        .btn-giant {
-            font-size: clamp(24px, 6vw, 32px);
-            padding: 18px 40px;
-            margin-bottom: 15px;
-        }
-
+        .btn-giant { font-size: clamp(24px, 6vw, 32px); padding: 18px 40px; margin-bottom: 15px; }
         .btn-yellow { background-color: #ffcc00; border-top-color: #ffe680; border-left-color: #ffe680; border-bottom-color: #b38f00; border-right-color: #b38f00; }
         .btn-blue   { background-color: #00b0ff; border-top-color: #80d8ff; border-left-color: #80d8ff; border-bottom-color: #007bb2; border-right-color: #007bb2; color: #fff; }
         .btn-red    { background-color: #ff1744; border-top-color: #ff8a80; border-left-color: #ff8a80; border-bottom-color: #b2102f; border-right-color: #b2102f; color: #fff; }
         .btn-green  { background-color: #00e676; border-top-color: #80f2b0; border-left-color: #80f2b0; border-bottom-color: #00a152; border-right-color: #00a152; }
         .btn-grey   { background-color: #d1d1d1; border-top-color: #ffffff; border-left-color: #ffffff; border-bottom-color: #777777; border-right-color: #777777; }
 
-        .pause-hud-btn {
-            padding: 6px 12px;
-            font-size: clamp(10px, 3vw, 14px);
-            margin: 0;
-            pointer-events: auto;
-        }
+        .pause-hud-btn { padding: 6px 12px; font-size: clamp(10px, 3vw, 14px); margin: 0; pointer-events: auto; }
 
         .touch-zone-container {
             position: absolute;
@@ -220,16 +210,10 @@
             user-select: none;
         }
 
-        .arrow-btn {
-            pointer-events: none; 
-            font-size: clamp(20px, 6vw, 32px);
-            padding: 15px 25px;
-            margin: 0;
-        }
-
+        .arrow-btn { pointer-events: none; font-size: clamp(20px, 6vw, 32px); padding: 15px 25px; margin: 0; }
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
-        .menu-footer { margin-top: 20px; text-align: center; color: #aaa; }
+        .menu-footer { margin-top: 20px; text-align: center; color: #aaa; background: rgba(0,0,0,0.5); padding: 5px; }
     </style>
 </head>
 <body>
@@ -253,7 +237,6 @@
         </div>
     </div>
 
-    <!-- Start Screen -->
     <div id="startScreen" class="ui-layer full-screen-menu">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
@@ -264,20 +247,16 @@
         <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 
-    <!-- Rules Screen -->
     <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu hidden">
         <h2 class="rules-title">SURVIVAL GUIDE</h2>
         <div class="rules-container">
             <p>Welcome to the wild streets of Berlin! You are a brave cyclist commuting through the city's chaotic neighborhoods, starting in <b>Prenzlauer Berg</b> and surviving all the way to <b>Neukölln</b>.</p>
-            <p>But the bike lanes here aren't safe havens. They are warzones.</p>
             <hr style="border:1px solid #444;">
             <p>🕹️ <b>CONTROLS:</b> Use Left/Right keys or tap the large left/right screen zones to steer.</p>
-            <p>🛣️ <b>THE STREET:</b> Left = Road (Cars). Right = Sidewalk. Center = Bike Lane.</p>
-            <p>🚌 <b>BVG BUSES:</b> The apex predators of the asphalt. They drive exactly on the edge of the bike lane. Do not mess with them.</p>
-            <p>🚗 <b>CARS & VANS:</b> Standard obstacles blocking your righteous path.</p>
-            <p>🚶 <b>TOURISTS & PEDESTRIANS:</b> Lost in thought (or their phones), they wander into the lane. However, afraid of traffic, they will <b>stop right at the edge of the car road</b>.</p>
-            <p>🚧 <b>CLUTTER:</b> Potholes, E-Scooters, and Patio Tables.</p>
-            <p>🚓 <b>DIE POLIZEI:</b> If the borders start flashing, the police are watching! You have exactly <b>1.5 seconds</b> to get back into the designated bike lane, or you will be BUSTED.</p>
+            <p>🛣️ <b>THE STREET:</b> Left = Road. Right = Sidewalk. Center = Bike Lane.</p>
+            <p>🚌 <b>BVG BUSES:</b> They drive exactly on the edge of the bike lane. Do not mess with them.</p>
+            <p>🚶 <b>PEDESTRIANS:</b> They wander into the lane but stop right at the edge of the car road.</p>
+            <p>🚓 <b>DIE POLIZEI:</b> Borders flashing? You have exactly <b>1.5 seconds</b> to get back into the bike lane, or you will be BUSTED.</p>
             <hr style="border:1px solid #444;">
             <p>💥 <b>GAME OVER:</b> Hit 3 obstacles or get busted 3 times, and you're out.</p>
         </div>
@@ -287,8 +266,7 @@
         </div>
     </div>
 
-    <!-- Pause Screen -->
-    <div id="pauseScreen" class="ui-layer hidden">
+    <div id="pauseScreen" class="ui-layer hidden" style="background: rgba(0,0,0,0.8);">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
             <button id="resumeBtn" class="chunky-btn btn-green">RESUME GAME</button>
@@ -296,7 +274,6 @@
         </div>
     </div>
 
-    <!-- Game Over Screen -->
     <div id="gameOverScreen" class="ui-layer full-screen-menu hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
@@ -308,37 +285,43 @@
 
 <script>
     /**
-     * Asset engine defining graphical elements using inline SVG strings.
+     * =========================================
+     * 1. EXTERNAL ASSET MANAGER
+     * =========================================
      */
-    const RAW_SVGS = {
-        "player": `<svg width="20" height="40" viewBox="0 0 20 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="9" y="2" width="2" height="36" fill="#111"/><rect x="4" y="8" width="12" height="3" fill="#000"/><rect x="5" y="15" width="10" height="12" fill="#00ffff"/><rect x="6" y="11" width="8" height="7" fill="#ffff00"/><rect x="6" y="17" width="8" height="8" fill="#ff3333"/></svg>`,
-        "explosion": `<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="15" width="30" height="10" fill="#ffea00"/><rect x="15" y="5" width="10" height="30" fill="#ffea00"/><rect x="10" y="10" width="20" height="20" fill="#ff5252"/><rect x="15" y="15" width="10" height="10" fill="#ffffff"/><rect x="0" y="0" width="8" height="8" fill="#ff5252"/><rect x="32" y="32" width="8" height="8" fill="#ffea00"/><rect x="32" y="0" width="8" height="8" fill="#ff5252"/><rect x="0" y="32" width="8" height="8" fill="#ffea00"/></svg>`,
-        "bus": `<svg width="90" height="240" viewBox="0 0 90 240" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="90" height="240" fill="#000"/><rect x="3" y="3" width="84" height="234" fill="#ffd700"/><rect x="15" y="25" width="60" height="190" fill="#222"/><rect x="5" y="5" width="80" height="16" fill="#111"/><rect x="5" y="219" width="80" height="16" fill="#111"/><rect x="10" y="235" width="20" height="3" fill="#ff0000"/><rect x="60" y="235" width="20" height="3" fill="#ff0000"/></svg>`,
-        "police1": `<svg width="40" height="80" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="40" height="80" fill="#000"/><rect x="2" y="2" width="36" height="76" fill="#e0e0e0"/><rect x="8" y="2" width="24" height="76" fill="#2979ff"/><rect x="4" y="12" width="32" height="14" fill="#111"/><rect x="4" y="56" width="32" height="10" fill="#111"/><rect x="12" y="35" width="8" height="6" fill="#ff1744"/><rect x="20" y="35" width="8" height="6" fill="#2979ff"/></svg>`,
-        "police2": `<svg width="40" height="80" viewBox="0 0 40 80" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="40" height="80" fill="#000"/><rect x="2" y="2" width="36" height="76" fill="#e0e0e0"/><rect x="8" y="2" width="24" height="76" fill="#2979ff"/><rect x="4" y="12" width="32" height="14" fill="#111"/><rect x="4" y="56" width="32" height="10" fill="#111"/><rect x="12" y="35" width="8" height="6" fill="#2979ff"/><rect x="20" y="35" width="8" height="6" fill="#ff1744"/></svg>`,
-        "van": `<svg width="45" height="120" viewBox="0 0 45 120" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="45" height="96" fill="#000"/><rect x="2" y="2" width="41" height="92" fill="#ffcc00"/><rect x="6" y="14" width="33" height="18" fill="#111"/><text x="-65" y="28" font-family="Arial, sans-serif" font-size="14" font-weight="bold" fill="#ff0000" transform="rotate(-90)">DHL</text><rect x="5" y="98" width="18" height="18" fill="#8b5a2b"/><rect x="26" y="103" width="12" height="12" fill="#cd853f"/></svg>`,
-        "car_taxi": `<svg width="38" height="75" viewBox="0 0 38 75" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="38" height="75" fill="#000"/><rect x="2" y="2" width="34" height="71" fill="#f5f5dc"/><rect x="6" y="24" width="26" height="27" fill="#222"/><rect x="4" y="12" width="30" height="10" fill="#111"/><rect x="4" y="53" width="30" height="8" fill="#111"/><rect x="12" y="32" width="14" height="6" fill="#ffcc00"/></svg>`,
-        "car_red": `<svg width="38" height="75" viewBox="0 0 38 75" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="38" height="75" fill="#000"/><rect x="2" y="2" width="34" height="71" fill="#ff1744"/><rect x="6" y="24" width="26" height="27" fill="#222"/><rect x="4" y="12" width="30" height="10" fill="#111"/><rect x="4" y="53" width="30" height="8" fill="#111"/></svg>`,
-        "car_green": `<svg width="38" height="75" viewBox="0 0 38 75" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="38" height="75" fill="#000"/><rect x="2" y="2" width="34" height="71" fill="#00e676"/><rect x="6" y="24" width="26" height="27" fill="#222"/><rect x="4" y="12" width="30" height="10" fill="#111"/><rect x="4" y="53" width="30" height="8" fill="#111"/></svg>`,
-        "car_blue": `<svg width="38" height="75" viewBox="0 0 38 75" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="38" height="75" fill="#000"/><rect x="2" y="2" width="34" height="71" fill="#00b0ff"/><rect x="6" y="24" width="26" height="27" fill="#222"/><rect x="4" y="12" width="30" height="10" fill="#111"/><rect x="4" y="53" width="30" height="8" fill="#111"/></svg>`,
-        "pedestrian": `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="6" y="2" width="8" height="8" fill="#ffccaa"/><rect x="3" y="10" width="14" height="8" fill="#ab47bc"/></svg>`,
-        "tourist": `<svg width="20" height="20" viewBox="0 0 20 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="6" y="2" width="8" height="8" fill="#ffccaa"/><rect x="3" y="10" width="14" height="8" fill="#ff5252"/><rect x="1" y="12" width="5" height="5" fill="#fff"/></svg>`,
-        "fence": `<svg width="60" height="20" viewBox="0 0 60 20" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="7" width="60" height="6" fill="#ff6d00"/><rect x="10" y="0" width="6" height="20" fill="#ffffff"/><rect x="44" y="0" width="6" height="20" fill="#ffffff"/></svg>`,
-        "bottles": `<svg width="15" height="15" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="2" y="3" width="5" height="10" fill="#00e676"/><rect x="8" y="5" width="5" height="8" fill="#00b0ff"/></svg>`,
-        "dumpster": `<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="40" height="40" fill="#111"/><rect x="2" y="4" width="36" height="32" fill="#333333"/><rect x="6" y="8" width="28" height="6" fill="#000"/><text x="20" y="28" font-family="'Lucida Console', monospace" font-size="10" font-weight="bold" fill="#ff6600" text-anchor="middle">BSR</text></svg>`,
-        "scooter": `<svg width="15" height="30" viewBox="0 0 15 30" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="6" y="2" width="3" height="22" fill="#fff"/><rect x="3" y="20" width="9" height="8" fill="#76ff03"/><rect x="1" y="2" width="13" height="3" fill="#ffea00"/></svg>`,
-        "pothole": `<svg width="25" height="25" viewBox="0 0 25 25" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="0" width="25" height="25" fill="#000"/><rect x="3" y="3" width="19" height="19" fill="#1a1a1a"/><rect x="7" y="7" width="11" height="11" fill="#0d0d0d"/></svg>`,
-        "bush": `<svg width="35" height="35" viewBox="0 0 35 35" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="2" y="4" width="31" height="27" fill="#1b5e20"/><rect x="5" y="2" width="25" height="31" fill="#2e7d32"/><rect x="10" y="9" width="15" height="17" fill="#4caf50"/></svg>`,
-        "lightpole": `<svg width="15" height="15" viewBox="0 0 15 15" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="5" y="4" width="5" height="7" fill="#ffea00"/><rect x="1" y="10" width="13" height="3" fill="#fff"/></svg>`,
-        "table": `<svg width="40" height="40" viewBox="0 0 40 40" xmlns="http://www.w3.org/2000/svg" shape-rendering="crispEdges"><rect x="0" y="10" width="8" height="20" fill="#8d6e63"/><rect x="32" y="10" width="8" height="20" fill="#8d6e63"/><rect x="8" y="5" width="24" height="30" fill="#5c3a21"/></svg>`
+    
+    // Core singular assets
+    const IMAGE_SOURCES = {
+        "player": "assets/player.png",
+        "explosion": "assets/explosion.png",
+        "police1": "assets/police1.png",
+        "police2": "assets/police2.png",
+        "lightpole": "assets/lightpole.png",
+        "game_bg": "assets/game_bg.png" // The repeating street background
     };
+
+    // The entities that require 3 visual variants each
+    const VARIANT_ENTITIES = [
+        "bus", "van", "car_taxi", "car_red", "car_green", "car_blue", 
+        "pedestrian", "tourist", "fence", "bottles", "dumpster", 
+        "scooter", "pothole", "bush", "table"
+    ];
+
+    // Automatically generate sources for the variants (_1.png, _2.png, _3.png)
+    VARIANT_ENTITIES.forEach(entity => {
+        for (let i = 1; i <= 3; i++) {
+            IMAGE_SOURCES[`${entity}_${i}`] = `assets/${entity}_${i}.png`;
+        }
+    });
 
     const ASSETS = {};
     let assetsLoaded = 0;
-    const totalAssets = Object.keys(RAW_SVGS).length;
+    const totalAssets = Object.keys(IMAGE_SOURCES).length;
 
-    for (const [key, svgString] of Object.entries(RAW_SVGS)) {
+    // Load all images into memory
+    for (const [key, path] of Object.entries(IMAGE_SOURCES)) {
         const img = new Image();
+        
         img.onload = () => {
             assetsLoaded++;
             if (assetsLoaded === totalAssets) {
@@ -348,12 +331,26 @@
                 document.getElementById("showRulesBtn").classList.remove("hidden");
             }
         };
-        img.src = "data:image/svg+xml;base64," + btoa(svgString);
+
+        // Fallback error handler so the game doesn't break if a file is missing during dev
+        img.onerror = () => {
+            console.warn(`Missing asset: ${path}`);
+            assetsLoaded++; 
+            if (assetsLoaded === totalAssets) {
+                document.getElementById("startBtn").innerText = "PLAY (MISSING ASSETS)";
+                document.getElementById("startBtn").disabled = false;
+                document.getElementById("showRulesBtn").classList.remove("hidden");
+            }
+        };
+
+        img.src = path;
         ASSETS[key] = img;
     }
 
     /**
-     * Global configuration object containing dimensions, velocities, and game timing parameters.
+     * =========================================
+     * 2. CONFIGURATION & ENTITY DEFINITIONS
+     * =========================================
      */
     const CONFIG = {
         width: 540,
@@ -369,24 +366,23 @@
         pointsToNextLevel: 2000 
     };
 
+    // Note: drawW, drawH, offsetX, offsetY allow visual image to be larger than hitbox w/h.
     const OBSTACLES = [
-        { name: "Parked Car", w: 38, h: 75, asset: "car_red" },
-        { name: "Tourist", w: 20, h: 20, asset: "tourist" },
-        { name: "Constr. Fence", w: 60, h: 20, asset: "fence" },
-        { name: "Glass Bottles", w: 15, h: 15, asset: "bottles" },
-        { name: "Dumpster", w: 40, h: 40, asset: "dumpster" },
-        { name: "E-Scooter", w: 15, h: 30, asset: "scooter" },
-        { name: "Pothole", w: 25, h: 25, asset: "pothole" },
-        { name: "Bush", w: 35, h: 35, asset: "bush" },
-        { name: "Patio Table", w: 40, h: 40, asset: "table" },
-        { name: "Delivery Van", w: 45, h: 120, asset: "van" }
+        { name: "Parked Car", w: 38, h: 75, assetBase: "car_red" },
+        { name: "Tourist", w: 20, h: 20, assetBase: "tourist" },
+        { name: "Constr. Fence", w: 60, h: 20, assetBase: "fence" },
+        { name: "Glass Bottles", w: 15, h: 15, assetBase: "bottles" },
+        { name: "Dumpster", w: 40, h: 40, assetBase: "dumpster" },
+        { name: "E-Scooter", w: 15, h: 30, assetBase: "scooter" },
+        { name: "Pothole", w: 25, h: 25, assetBase: "pothole" },
+        // Example: The bush hitbox is 35x35, but we draw it visually as 50x50, shifted up and left
+        { name: "Bush", w: 35, h: 35, drawW: 50, drawH: 50, offsetX: -7.5, offsetY: -15, assetBase: "bush" },
+        { name: "Patio Table", w: 40, h: 40, assetBase: "table" },
+        { name: "Delivery Van", w: 45, h: 120, assetBase: "van" }
     ];
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
 
-    /**
-     * Level progression data defining spawn rates and speeds per Berlin neighborhood.
-     */
     const LEVELS = [
         { name: "Prenzlauer Berg", obsPerSec: 0.24, carPerSec: 0.70, pedPerSec: 0.36, carSpeed: 750, erraticChance: 0.05, policeChance: 0.05 },
         { name: "Mitte",           obsPerSec: 0.60, carPerSec: 1.40, pedPerSec: 0.72, carSpeed: 780, erraticChance: 0.08, policeChance: 0.08 },
@@ -400,6 +396,11 @@
         { name: "Neukölln",        obsPerSec: 5.40, carPerSec: 8.40, pedPerSec: 6.00, carSpeed: 1050, erraticChance: 0.25, policeChance: 0.40 }
     ];
 
+    /**
+     * =========================================
+     * 3. ENGINE LOGIC
+     * =========================================
+     */
     const canvas = document.getElementById("gameCanvas");
     const ctx = canvas.getContext("2d");
     ctx.imageSmoothingEnabled = false; 
@@ -433,7 +434,6 @@
     
     let policePresence = false;
     let policeReactionTimer = CONFIG.policeWarningSeconds;
-
     let lastTime = 0;
 
     const player = { x: 255, y: 750, width: 20, height: 40, invulnerableSeconds: 0 };
@@ -446,9 +446,7 @@
                 touchControls.classList.add("keyboard-mode");
             }
         }
-        
         if (e.key === 'p' || e.key === 'P') togglePause();
-        
         if (e.key === 'Enter') {
             if (!isPlaying && !startScreen.classList.contains("hidden") && document.getElementById("startBtn").disabled === false) {
                 document.getElementById("startBtn").click();
@@ -565,9 +563,11 @@
         return false;
     }
 
-    /**
-     * Handles dynamic entity spawning based on elapsed delta time.
-     */
+    function getVariant(baseName) {
+        const variantNum = Math.floor(Math.random() * 3) + 1;
+        return `${baseName}_${variantNum}`;
+    }
+
     function spawnEntity(dt) {
         const lvl = LEVELS[currentLevel];
         let obsRate = policePresence ? (lvl.obsPerSec * 0.2) : lvl.obsPerSec;
@@ -581,22 +581,24 @@
 
         if (Math.random() < obsRate * dt) {
             let obsDef = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
-            let assetKey = obsDef.asset;
-            if (obsDef.name === "Parked Car") assetKey = CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            let baseKey = obsDef.assetBase;
+            if (obsDef.name === "Parked Car") baseKey = CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            
+            let finalAssetKey = getVariant(baseKey);
             
             if (obsDef.name === "Patio Table") {
                 let numTables = Math.floor(Math.random() * 5) + 2;
                 for (let i = 0; i < numTables; i++) {
-                    let newObs = { type: "obstacle", name: obsDef.name, asset: assetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150 - (i * (obsDef.h + 5)), width: obsDef.w, height: obsDef.h, vx: 0, vy: CONFIG.scrollSpeed };
+                    let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150 - (i * (obsDef.h + 5)), width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                     if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
                 }
             } else if (obsDef.name === "Bush") {
-                let newObs = { type: "obstacle", name: obsDef.name, asset: assetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150, width: obsDef.w, height: obsDef.h, vx: 0, vy: CONFIG.scrollSpeed };
+                let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150, width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
             } else {
                 let inBikeLane = Math.random() < 0.5;
                 let spawnX = inBikeLane ? (CONFIG.roadWidth + 5 + Math.random() * (CONFIG.bikeLaneWidth - obsDef.w - 10)) : (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 15 + Math.random() * (CONFIG.sidewalkWidth - obsDef.w - 30));
-                let newObs = { type: "obstacle", name: obsDef.name, asset: assetKey, x: spawnX, y: -150, width: obsDef.w, height: obsDef.h, vx: 0, vy: CONFIG.scrollSpeed };
+                let newObs = { type: "obstacle", asset: finalAssetKey, x: spawnX, y: -150, width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
             }
         }
@@ -607,20 +609,21 @@
             let h = isBus ? 240 : 75;
             let onScreenVy = CONFIG.scrollSpeed - lvl.carSpeed; 
             let spawnX = isBus ? (CONFIG.roadWidth - w) : (20 + Math.random() * (CONFIG.roadWidth - w - 40));
-            let assetKey = isBus ? "bus" : CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            let baseKey = isBus ? "bus" : CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
 
-            let newVehicle = { type: isBus ? "bus" : "car", name: isBus ? "BVG Bus" : "Car", asset: assetKey, x: spawnX, y: CONFIG.height + 150, width: w, height: h, vx: 0, originalVy: onScreenVy, vy: onScreenVy };
+            let newVehicle = { type: isBus ? "bus" : "car", asset: getVariant(baseKey), x: spawnX, y: CONFIG.height + 150, width: w, height: h, vx: 0, originalVy: onScreenVy, vy: onScreenVy };
             if (!isOverlapping(newVehicle, ["car", "bus"], 15, 120)) entities.push(newVehicle);
         }
 
         if (Math.random() < lvl.pedPerSec * dt) {
             let isErratic = Math.random() < lvl.erraticChance;
-            entities.push({ type: "pedestrian", name: "Pedestrian", asset: "pedestrian", x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
+            entities.push({ type: "pedestrian", asset: getVariant("pedestrian"), x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
         if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
-            entities.push({ type: "police", name: "Polizei", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
+            // Police are animated (toggled later), so assign base police1 initially
+            entities.push({ type: "police", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
         }
     }
 
@@ -731,6 +734,7 @@
             ent.x += ent.vx * dt;
             ent.y += ent.vy * dt;
 
+            // Pedestrian bounds check
             if (ent.type === "pedestrian" && ent.x <= CONFIG.roadWidth) {
                 ent.x = CONFIG.roadWidth;
                 ent.vx = 0;
@@ -753,30 +757,41 @@
     }
 
     function draw() {
-        ctx.fillStyle = "#2b2b2b"; 
-        ctx.fillRect(0, 0, CONFIG.roadWidth, CONFIG.height);
+        let bgImg = ASSETS["game_bg"];
         
-        ctx.fillStyle = "#613838";  
-        ctx.fillRect(CONFIG.roadWidth, 0, CONFIG.bikeLaneWidth, CONFIG.height);
+        // If a game background is loaded, render it scrolling
+        if (bgImg && bgImg.complete && bgImg.naturalWidth !== 0) {
+            let tileH = bgImg.height || 512; // Dynamic tile height detection
+            let scrollOffset = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % tileH;
+            
+            // Loop background rendering to cover the screen plus overhang
+            for(let y = scrollOffset - tileH; y < CONFIG.height; y += tileH) {
+                ctx.drawImage(bgImg, 0, y, CONFIG.width, tileH);
+            }
+        } else {
+            // Fallback rendering if no external background is available yet
+            ctx.fillStyle = "#2b2b2b"; 
+            ctx.fillRect(0, 0, CONFIG.roadWidth, CONFIG.height);
+            ctx.fillStyle = "#613838";  
+            ctx.fillRect(CONFIG.roadWidth, 0, CONFIG.bikeLaneWidth, CONFIG.height);
+            ctx.fillStyle = "#6e6b66"; 
+            ctx.fillRect(CONFIG.roadWidth + CONFIG.bikeLaneWidth, 0, CONFIG.sidewalkWidth, CONFIG.height);
 
-        ctx.fillStyle = "#6e6b66"; 
-        ctx.fillRect(CONFIG.roadWidth + CONFIG.bikeLaneWidth, 0, CONFIG.sidewalkWidth, CONFIG.height);
+            ctx.strokeStyle = "#ffffff"; 
+            ctx.setLineDash([20, 20]);
+            ctx.lineWidth = 4;
+            ctx.beginPath();
+            let fallBackScroll = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % 40;
+            ctx.moveTo(CONFIG.roadWidth, fallBackScroll - 40);
+            ctx.lineTo(CONFIG.roadWidth, CONFIG.height);
+            ctx.stroke();
 
-        ctx.strokeStyle = "#ffffff"; 
-        ctx.setLineDash([20, 20]);
-        ctx.lineWidth = 4;
-        
-        ctx.beginPath();
-        let scrollOffset = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % 40;
-        ctx.moveTo(CONFIG.roadWidth, scrollOffset - 40);
-        ctx.lineTo(CONFIG.roadWidth, CONFIG.height);
-        ctx.stroke();
-
-        ctx.setLineDash([]);
-        ctx.beginPath();
-        ctx.moveTo(CONFIG.roadWidth + CONFIG.bikeLaneWidth, 0);
-        ctx.lineTo(CONFIG.roadWidth + CONFIG.bikeLaneWidth, CONFIG.height);
-        ctx.stroke();
+            ctx.setLineDash([]);
+            ctx.beginPath();
+            ctx.moveTo(CONFIG.roadWidth + CONFIG.bikeLaneWidth, 0);
+            ctx.lineTo(CONFIG.roadWidth + CONFIG.bikeLaneWidth, CONFIG.height);
+            ctx.stroke();
+        }
 
         if (policePresence) {
             let blinkSpeed = policeReactionTimer > 0 ? 300 : 150; 
@@ -794,13 +809,20 @@
 
         for (let ent of entities) {
             if (ASSETS[ent.asset]) {
-                ctx.drawImage(ASSETS[ent.asset], ent.x, ent.y, ent.width, ent.height);
+                // Support visual overhangs decoupled from the hitbox width/height
+                let dW = ent.drawW || ent.width;
+                let dH = ent.drawH || ent.height;
+                let dX = ent.x + (ent.offsetX || 0);
+                let dY = ent.y + (ent.offsetY || 0);
+                
+                ctx.drawImage(ASSETS[ent.asset], dX, dY, dW, dH);
             }
         }
 
         if (isHitFreeze) {
-            ctx.drawImage(ASSETS["explosion"], explosionPos.x - 10, explosionPos.y - 10, 40, 40);
-            
+            if (ASSETS["explosion"]) {
+                ctx.drawImage(ASSETS["explosion"], explosionPos.x - 10, explosionPos.y - 10, 40, 40);
+            }
             if (bustedByPolice) {
                 ctx.fillStyle = "#ff1744";
                 ctx.font = "bold 64px 'Lucida Console', monospace";
@@ -809,21 +831,20 @@
                 ctx.shadowOffsetX = 4;
                 ctx.shadowOffsetY = 4;
                 ctx.fillText("BUSTED!", CONFIG.width / 2, CONFIG.height / 2);
-                
                 ctx.shadowColor = "transparent";
                 ctx.textAlign = "left"; 
             }
         } else if (player.invulnerableSeconds <= 0 || Math.floor(performance.now() / 80) % 2 === 0) { 
-            ctx.drawImage(ASSETS["player"], player.x, player.y, player.width, player.height);
+            if (ASSETS["player"]) {
+                ctx.drawImage(ASSETS["player"], player.x, player.y, player.width, player.height);
+            }
         }
     }
 
     function gameLoop(timestamp) {
         if (!isPlaying || isPaused) return;
-
         let dt = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
-
         if (dt > 0.1) dt = 0.1; 
 
         update(dt);
