@@ -66,7 +66,6 @@
             background-repeat: no-repeat;
         }
 
-        /* Distinct background configurations for each UI screen */
         .bg-start { background-image: url('assets/start_bg.png'); }
         .bg-rules { background-image: url('assets/rules_bg.png'); }
         .bg-gameover { background-image: url('assets/gameover_bg.png'); }
@@ -242,7 +241,6 @@
         </div>
     </div>
 
-    <!-- Start Screen -->
     <div id="startScreen" class="ui-layer full-screen-menu bg-start">
         <h1 class="title-giant">RADWEG<br>ROYALE</h1>
         <p class="subtitle">Berlin Bike Lane Survival</p>
@@ -253,7 +251,6 @@
         <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 
-    <!-- Rules Screen -->
     <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu bg-rules hidden">
         <h2 class="rules-title">SURVIVAL GUIDE</h2>
         <div class="rules-container">
@@ -273,7 +270,6 @@
         </div>
     </div>
 
-    <!-- Pause Screen -->
     <div id="pauseScreen" class="ui-layer hidden" style="background: rgba(0,0,0,0.8);">
         <h1 class="title-giant" style="font-size: 40px;">PAUSED</h1>
         <div class="flex-row" style="flex-direction: column; align-items: center; margin-top: 20px;">
@@ -282,7 +278,6 @@
         </div>
     </div>
 
-    <!-- Game Over Screen -->
     <div id="gameOverScreen" class="ui-layer full-screen-menu bg-gameover hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
@@ -299,7 +294,6 @@
      * =========================================
      */
     
-    // Core singular assets
     const IMAGE_SOURCES = {
         "player": "assets/player.png",
         "explosion": "assets/explosion.png",
@@ -309,14 +303,12 @@
         "game_bg": "assets/game_bg.png"
     };
 
-    // The entities that require 3 visual variants each
     const VARIANT_ENTITIES = [
         "bus", "van", "car_taxi", "car_red", "car_green", "car_blue", 
         "pedestrian", "tourist", "fence", "bottles", "dumpster", 
         "scooter", "pothole", "bush", "table"
     ];
 
-    // Automatically generate sources for the variants (_1.png, _2.png, _3.png)
     VARIANT_ENTITIES.forEach(entity => {
         for (let i = 1; i <= 3; i++) {
             IMAGE_SOURCES[`${entity}_${i}`] = `assets/${entity}_${i}.png`;
@@ -327,7 +319,6 @@
     let assetsLoaded = 0;
     const totalAssets = Object.keys(IMAGE_SOURCES).length;
 
-    // Load all images into memory
     for (const [key, path] of Object.entries(IMAGE_SOURCES)) {
         const img = new Image();
         
@@ -341,7 +332,6 @@
             }
         };
 
-        // Fallback error handler so the game doesn't break if a file is missing during dev
         img.onerror = () => {
             console.warn(`Missing asset: ${path}`);
             assetsLoaded++; 
@@ -372,21 +362,45 @@
         invincibilitySeconds: 3.0,     
         policeWarningSeconds: 1.5,     
         scorePerSecond: 120,           
-        pointsToNextLevel: 2000 
+        pointsToNextLevel: 2000,
+        showHitboxes: false    // Set to true to display collision hitboxes for debugging
     };
 
-    // Note: drawW, drawH, offsetX, offsetY allow visual image to be larger than hitbox w/h.
+    /**
+     * Centralized layout for all entity hitboxes and drawn graphics.
+     * w, h = Physical collision hitbox size
+     * drawW, drawH = Visual image size
+     * offsetX, offsetY = Visual image shift relative to hitbox top-left
+     */
+    const ENTITY_CONFIG = {
+        "player":     { w: 20, h: 40,  drawW: 20, drawH: 40,  offsetX: 0,    offsetY: 0 },
+        "car":        { w: 38, h: 75,  drawW: 48, drawH: 85,  offsetX: -5,    offsetY: -5 },
+        "van":        { w: 45, h: 120, drawW: 55, drawH: 130, offsetX: -5,    offsetY: -5 },
+        "bus":        { w: 90, h: 240, drawW: 90, drawH: 240, offsetX: 0,    offsetY: 0 },
+        "pedestrian": { w: 20, h: 20,  drawW: 20, drawH: 20,  offsetX: 0,    offsetY: 0 },
+        "tourist":    { w: 20, h: 20,  drawW: 20, drawH: 20,  offsetX: 0,    offsetY: 0 },
+        "police":     { w: 38, h: 75,  drawW: 48, drawH: 85,  offsetX: -5,    offsetY: -5 },
+        "fence":      { w: 60, h: 20,  drawW: 60, drawH: 20,  offsetX: 0,    offsetY: 0 },
+        "bottles":    { w: 15, h: 15,  drawW: 15, drawH: 15,  offsetX: 0,    offsetY: 0 },
+        "dumpster":   { w: 40, h: 40,  drawW: 40, drawH: 40,  offsetX: 0,    offsetY: 0 },
+        "scooter":    { w: 15, h: 30,  drawW: 15, drawH: 30,  offsetX: 0,    offsetY: 0 },
+        "pothole":    { w: 25, h: 25,  drawW: 25, drawH: 25,  offsetX: 0,    offsetY: 0 },
+        "bush":       { w: 35, h: 35,  drawW: 50, drawH: 50,  offsetX: -7.5, offsetY: -15 },
+        "table":      { w: 40, h: 40,  drawW: 40, drawH: 40,  offsetX: 0,    offsetY: 0 },
+        "lightpole":  { w: 15, h: 15,  drawW: 15, drawH: 15,  offsetX: 0,    offsetY: 0 }
+    };
+
     const OBSTACLES = [
-        { name: "Parked Car", w: 38, h: 75, assetBase: "car_red" },
-        { name: "Tourist", w: 20, h: 20, assetBase: "tourist" },
-        { name: "Constr. Fence", w: 60, h: 20, assetBase: "fence" },
-        { name: "Glass Bottles", w: 15, h: 15, assetBase: "bottles" },
-        { name: "Dumpster", w: 40, h: 40, assetBase: "dumpster" },
-        { name: "E-Scooter", w: 15, h: 30, assetBase: "scooter" },
-        { name: "Pothole", w: 25, h: 25, assetBase: "pothole" },
-        { name: "Bush", w: 35, h: 35, drawW: 50, drawH: 50, offsetX: -7.5, offsetY: -15, assetBase: "bush" },
-        { name: "Patio Table", w: 40, h: 40, assetBase: "table" },
-        { name: "Delivery Van", w: 45, h: 120, assetBase: "van" }
+        { name: "Parked Car", configKey: "car", assetBase: "car" }, 
+        { name: "Tourist", configKey: "tourist", assetBase: "tourist" },
+        { name: "Constr. Fence", configKey: "fence", assetBase: "fence" },
+        { name: "Glass Bottles", configKey: "bottles", assetBase: "bottles" },
+        { name: "Dumpster", configKey: "dumpster", assetBase: "dumpster" },
+        { name: "E-Scooter", configKey: "scooter", assetBase: "scooter" },
+        { name: "Pothole", configKey: "pothole", assetBase: "pothole" },
+        { name: "Bush", configKey: "bush", assetBase: "bush" },
+        { name: "Patio Table", configKey: "table", assetBase: "table" },
+        { name: "Delivery Van", configKey: "van", assetBase: "van" }
     ];
 
     const CAR_ASSETS = ["car_red", "car_green", "car_blue", "car_taxi"];
@@ -444,7 +458,8 @@
     let policeReactionTimer = CONFIG.policeWarningSeconds;
     let lastTime = 0;
 
-    const player = { x: 255, y: 750, width: 20, height: 40, invulnerableSeconds: 0 };
+    const pCfg = ENTITY_CONFIG["player"];
+    const player = { x: 255, y: 750, width: pCfg.w, height: pCfg.h, invulnerableSeconds: 0 };
 
     window.addEventListener("keydown", (e) => {
         if (keys.hasOwnProperty(e.code)) {
@@ -584,53 +599,61 @@
         window.lightPoleTimer += dt;
         if (window.lightPoleTimer >= 2.0) {
             window.lightPoleTimer = 0;
-            entities.push({ type: "obstacle", name: "Light Pole", asset: "lightpole", x: 302.5, y: -50, width: 15, height: 15, vx: 0, vy: CONFIG.scrollSpeed });
+            let cfg = ENTITY_CONFIG["lightpole"];
+            entities.push({ type: "obstacle", asset: "lightpole", x: 302.5, y: -50, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed });
         }
 
         if (Math.random() < obsRate * dt) {
             let obsDef = OBSTACLES[Math.floor(Math.random() * OBSTACLES.length)];
-            let baseKey = obsDef.assetBase;
-            if (obsDef.name === "Parked Car") baseKey = CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            let cfg = ENTITY_CONFIG[obsDef.configKey];
             
-            let finalAssetKey = getVariant(baseKey);
+            let baseAsset = obsDef.assetBase;
+            if (obsDef.configKey === "car") {
+                baseAsset = CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            }
             
-            if (obsDef.name === "Patio Table") {
+            let finalAssetKey = getVariant(baseAsset);
+            
+            if (obsDef.configKey === "table") {
                 let numTables = Math.floor(Math.random() * 5) + 2;
                 for (let i = 0; i < numTables; i++) {
-                    let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150 - (i * (obsDef.h + 5)), width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
+                    let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (cfg.w / 2), y: -150 - (i * (cfg.h + 5)), width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                     if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
                 }
-            } else if (obsDef.name === "Bush") {
-                let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (obsDef.w / 2), y: -150, width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
+            } else if (obsDef.configKey === "bush") {
+                let newObs = { type: "obstacle", asset: finalAssetKey, x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth) - (cfg.w / 2), y: -150, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
             } else {
                 let inBikeLane = Math.random() < 0.5;
-                let spawnX = inBikeLane ? (CONFIG.roadWidth + 5 + Math.random() * (CONFIG.bikeLaneWidth - obsDef.w - 10)) : (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 15 + Math.random() * (CONFIG.sidewalkWidth - obsDef.w - 30));
-                let newObs = { type: "obstacle", asset: finalAssetKey, x: spawnX, y: -150, width: obsDef.w, height: obsDef.h, drawW: obsDef.drawW, drawH: obsDef.drawH, offsetX: obsDef.offsetX, offsetY: obsDef.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
+                let spawnX = inBikeLane ? (CONFIG.roadWidth + 5 + Math.random() * (CONFIG.bikeLaneWidth - cfg.w - 10)) : (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 15 + Math.random() * (CONFIG.sidewalkWidth - cfg.w - 30));
+                let newObs = { type: "obstacle", asset: finalAssetKey, x: spawnX, y: -150, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
             }
         }
 
         if (Math.random() < lvl.carPerSec * dt) {
             let isBus = Math.random() < 0.2; 
-            let w = isBus ? 90 : 38; 
-            let h = isBus ? 240 : 75;
+            let configKey = isBus ? "bus" : "car";
+            let cfg = ENTITY_CONFIG[configKey];
+            
             let onScreenVy = CONFIG.scrollSpeed - lvl.carSpeed; 
-            let spawnX = isBus ? (CONFIG.roadWidth - w) : (20 + Math.random() * (CONFIG.roadWidth - w - 40));
-            let baseKey = isBus ? "bus" : CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
+            let spawnX = isBus ? (CONFIG.roadWidth - cfg.w) : (20 + Math.random() * (CONFIG.roadWidth - cfg.w - 40));
+            let baseAsset = isBus ? "bus" : CAR_ASSETS[Math.floor(Math.random() * CAR_ASSETS.length)];
 
-            let newVehicle = { type: isBus ? "bus" : "car", asset: getVariant(baseKey), x: spawnX, y: CONFIG.height + 150, width: w, height: h, vx: 0, originalVy: onScreenVy, vy: onScreenVy };
+            let newVehicle = { type: configKey, asset: getVariant(baseAsset), x: spawnX, y: CONFIG.height + 150, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, originalVy: onScreenVy, vy: onScreenVy };
             if (!isOverlapping(newVehicle, ["car", "bus"], 15, 120)) entities.push(newVehicle);
         }
 
         if (Math.random() < lvl.pedPerSec * dt) {
             let isErratic = Math.random() < lvl.erraticChance;
-            entities.push({ type: "pedestrian", asset: getVariant("pedestrian"), x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: 20, height: 20, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
+            let cfg = ENTITY_CONFIG["pedestrian"];
+            entities.push({ type: "pedestrian", asset: getVariant("pedestrian"), x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
         if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
-            entities.push({ type: "police", asset: "police1", x: side, y: -80, width: 40, height: 80, vx: 0, vy: CONFIG.scrollSpeed });
+            let cfg = ENTITY_CONFIG["police"];
+            entities.push({ type: "police", asset: "police1", x: side, y: -80, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed });
         }
     }
 
@@ -812,12 +835,10 @@
 
         for (let ent of entities) {
             if (ASSETS[ent.asset]) {
-                let dW = ent.drawW || ent.width;
-                let dH = ent.drawH || ent.height;
                 let dX = ent.x + (ent.offsetX || 0);
                 let dY = ent.y + (ent.offsetY || 0);
                 
-                ctx.drawImage(ASSETS[ent.asset], dX, dY, dW, dH);
+                ctx.drawImage(ASSETS[ent.asset], dX, dY, ent.drawW, ent.drawH);
             }
         }
 
@@ -838,7 +859,26 @@
             }
         } else if (player.invulnerableSeconds <= 0 || Math.floor(performance.now() / 80) % 2 === 0) { 
             if (ASSETS["player"]) {
-                ctx.drawImage(ASSETS["player"], player.x, player.y, player.width, player.height);
+                let pCfg = ENTITY_CONFIG["player"];
+                ctx.drawImage(ASSETS["player"], player.x + pCfg.offsetX, player.y + pCfg.offsetY, pCfg.drawW, pCfg.drawH);
+            }
+        }
+
+        // --- DEBUG HITBOXES ---
+        if (CONFIG.showHitboxes) {
+            ctx.lineWidth = 2;
+            ctx.setLineDash([]);
+            
+            // Draw all entity hitboxes in green
+            ctx.strokeStyle = "#00ff00"; 
+            for (let ent of entities) {
+                ctx.strokeRect(ent.x, ent.y, ent.width, ent.height);
+            }
+
+            // Draw player hitbox in magenta
+            ctx.strokeStyle = "#ff00ff"; 
+            if (!isHitFreeze) { // Only draw if not exploded
+                ctx.strokeRect(player.x, player.y, player.width, player.height);
             }
         }
     }
