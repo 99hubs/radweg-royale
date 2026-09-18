@@ -12,12 +12,24 @@
     <link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAyMCAyMCI+PHJlY3QgeD0iNSIgeT0iNSIgd2lkdGg9IjEwIiBoZWlnaHQ9IjEwIiBmaWxsPSIjMDBmZmZmIi8+PHJlY3QgeD0iNiIgeT0iMiIgd2lkdGg9IjgiIGhlaWdodD0iNyIgZmlsbD0iI2ZmZmYwMCIvPjwvc3ZnPg==">
 
     <style>
+        /* Custom Fonts */
+        @font-face {
+            font-family: 'PixelFont';
+            src: url('assets/fonts/pixel_font.otf') format('opentype');
+        }
+        
+        @font-face {
+            font-family: 'PixelFontItalic';
+            src: url('assets/fonts/pixel_font_italic.otf') format('opentype');
+        }
+
         body {
             margin: 0;
             padding: 0;
             background-color: #050505;
             color: #fff;
-            font-family: 'Lucida Console', Monaco, monospace;
+            /* Primary pixel font for the game UI */
+            font-family: 'PixelFont', 'Lucida Console', Monaco, monospace;
             display: flex;
             justify-content: center;
             align-items: center;
@@ -107,27 +119,30 @@
         }
         
         .title-giant {
-            font-size: clamp(40px, 10vw, 60px);
+            font-size: clamp(60px, 10vw, 80px);
             line-height: 1;
             color: #ffcc00;
             text-align: center;
             margin: 0 0 10px 0;
-            text-shadow: 4px 4px 0px #ff1744, 6px 6px 0px #000;
+            text-shadow: 5px 5px 0px #ff1744, 6px 6px 0px #000;
             letter-spacing: 2px;
         }
         .subtitle {
-            font-size: clamp(14px, 3.5vw, 18px);
+            font-size: clamp(16px, 3.5vw, 24px);
             color: #00ffff;
             margin-bottom: 40px;
-            text-shadow: 2px 2px 0px #000;
-            letter-spacing: 1px;
+            text-shadow: 4px 4px 0px #000;
+            letter-spacing: 2px;
             text-align: center;
         }
         .score-giant {
-            font-size: clamp(50px, 12vw, 70px);
-            color: #00ffff;
-            text-shadow: 4px 4px 0px #000;
+            font-size: clamp(60px, 10vw, 80px);
+            line-height: 1;
+            color: #ffcc00;
+            text-align: center;
             margin: 0 0 10px 0;
+            text-shadow: 5px 5px 0px #ff1744, 8px 8px 0px #000;
+            letter-spacing: 2px;
         }
         .game-over-title {
             font-size: clamp(28px, 7vw, 36px);
@@ -145,18 +160,29 @@
             padding: 15px;
             margin-bottom: 20px;
             text-align: left;
-            font-size: clamp(12px, 3.5vw, 15px);
+            font-size: clamp(14px, 4vw, 16px);
             line-height: 1.6;
             color: #ddd;
             text-shadow: 1px 1px 0px #000;
             box-sizing: border-box;
+            font-family: 'PixelFont', 'Lucida Console', Monaco, monospace;
+            text-transform: none;
         }
         .rules-container p { margin: 12px 0; text-align: left; max-width: 100%; }
         .rules-container b { color: #ffcc00; }
-        .rules-title { color: #ffcc00; font-size: clamp(24px, 6vw, 30px); margin-top: 0; margin-bottom: 15px; text-align: center;}
+        .rules-title { 
+            color: #ffcc00; 
+            font-size: clamp(24px, 6vw, 36px);
+            margin-top: 0;
+            margin-bottom: 15px; 
+            text-align: center;
+            font-family: 'PixelFont', monospace;
+            text-transform: uppercase;
+            text-shadow: 2px 2px 0px #ff1744, 6px 6px 0px #000;
+        }
 
         .chunky-btn {
-            font-family: 'Lucida Console', Monaco, monospace;
+            font-family: 'PixelFont', 'Lucida Console', Monaco, monospace;
             font-size: clamp(14px, 4vw, 20px);
             font-weight: bold;
             text-transform: uppercase;
@@ -217,7 +243,6 @@
         .arrow-btn { pointer-events: none; font-size: clamp(20px, 6vw, 32px); padding: 15px 25px; margin: 0; }
         .hidden { display: none !important; }
         .flex-row { display: flex; gap: 10px; justify-content: center; width: 100%; }
-        .menu-footer { margin-top: 20px; text-align: center; color: #aaa; background: rgba(0,0,0,0.5); padding: 5px; }
     </style>
 </head>
 <body>
@@ -227,7 +252,7 @@
     
     <div id="hud" class="hud hidden">
         <div id="scoreDisplay">SCORE: 0</div>
-        <button id="pauseBtn" class="chunky-btn btn-grey pause-hud-btn">PAUSE (P)</button>
+        <button id="pauseBtn" class="chunky-btn btn-grey pause-hud-btn">PAUSE</button>
         <div id="livesDisplay">LIVES: ❤️❤️❤️</div>
     </div>
     <div id="levelDisplay" class="hud-center hidden">LEVEL 1: PRENZLAUER BERG</div>
@@ -247,8 +272,6 @@
         
         <button id="startBtn" class="chunky-btn btn-yellow btn-giant" disabled>LOADING...</button>
         <button id="showRulesBtn" class="chunky-btn btn-blue hidden">HOW TO PLAY</button>
-        
-        <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 
     <div id="rulesScreen" class="ui-layer full-screen-menu scrollable-menu bg-rules hidden">
@@ -256,7 +279,7 @@
         <div class="rules-container">
             <p>Welcome to the wild streets of Berlin! You are a brave cyclist commuting through the city's chaotic neighborhoods, starting in <b>Prenzlauer Berg</b> and surviving all the way to <b>Neukölln</b>.</p>
             <hr style="border:1px solid #444;">
-            <p>🕹️ <b>CONTROLS:</b> Use Left/Right keys or tap the large left/right screen zones to steer.</p>
+            <p>🕹️ <b>CONTROLS:</b> Tap the large left/right screen zones to steer.</p>
             <p>🛣️ <b>THE STREET:</b> Left = Road. Right = Sidewalk. Center = Bike Lane.</p>
             <p>🚌 <b>BVG BUSES:</b> They drive exactly on the edge of the bike lane. Do not mess with them.</p>
             <p>🚶 <b>PEDESTRIANS:</b> They wander into the lane but stop right at the edge of the car road.</p>
@@ -283,7 +306,6 @@
         <div class="game-over-title">GAME OVER</div>
         <div class="subtitle" id="finalScoreLevel" style="margin-bottom: 30px;">Level 1: Prenzlauer Berg</div>
         <button id="restartBtn" class="chunky-btn btn-yellow btn-giant">TRY AGAIN</button>
-        <p class="menu-footer">(PRESS ENTER)</p>
     </div>
 </div>
 
@@ -363,15 +385,9 @@
         policeWarningSeconds: 1.5,     
         scorePerSecond: 120,           
         pointsToNextLevel: 2000,
-        showHitboxes: false    // Set to true to display collision hitboxes for debugging
+        showHitboxes: false
     };
 
-    /**
-     * Centralized layout for all entity hitboxes and drawn graphics.
-     * w, h = Physical collision hitbox size
-     * drawW, drawH = Visual image size
-     * offsetX, offsetY = Visual image shift relative to hitbox top-left
-     */
     const ENTITY_CONFIG = {
         "player":     { w: 20, h: 40,  drawW: 20, drawH: 40,  offsetX: 0,    offsetY: 0 },
         "car":        { w: 38, h: 75,  drawW: 48, drawH: 85,  offsetX: -5,    offsetY: -5 },
@@ -625,6 +641,12 @@
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
             } else {
                 let inBikeLane = Math.random() < 0.5;
+                
+                // Rule: Don't spawn fences in the bike lane if the police are present
+                if (obsDef.configKey === "fence" && policePresence) {
+                    inBikeLane = false; 
+                }
+
                 let spawnX = inBikeLane ? (CONFIG.roadWidth + 5 + Math.random() * (CONFIG.bikeLaneWidth - cfg.w - 10)) : (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 15 + Math.random() * (CONFIG.sidewalkWidth - cfg.w - 30));
                 let newObs = { type: "obstacle", asset: finalAssetKey, x: spawnX, y: -150, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed };
                 if (!isOverlapping(newObs, ["obstacle"])) entities.push(newObs);
@@ -848,7 +870,7 @@
             }
             if (bustedByPolice) {
                 ctx.fillStyle = "#ff1744";
-                ctx.font = "bold 64px 'Lucida Console', monospace";
+                ctx.font = "64px 'PixelFont', monospace";
                 ctx.textAlign = "center";
                 ctx.shadowColor = "#000";
                 ctx.shadowOffsetX = 4;
@@ -864,20 +886,17 @@
             }
         }
 
-        // --- DEBUG HITBOXES ---
         if (CONFIG.showHitboxes) {
             ctx.lineWidth = 2;
             ctx.setLineDash([]);
             
-            // Draw all entity hitboxes in green
             ctx.strokeStyle = "#00ff00"; 
             for (let ent of entities) {
                 ctx.strokeRect(ent.x, ent.y, ent.width, ent.height);
             }
 
-            // Draw player hitbox in magenta
             ctx.strokeStyle = "#ff00ff"; 
-            if (!isHitFreeze) { // Only draw if not exploded
+            if (!isHitFreeze) { 
                 ctx.strokeRect(player.x, player.y, player.width, player.height);
             }
         }
