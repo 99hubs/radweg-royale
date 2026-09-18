@@ -266,6 +266,11 @@
         </div>
     </div>
 
+    <!-- Ready / Go Overlay -->
+    <div id="readyGoScreen" class="ui-layer hidden" style="background: rgba(0,0,0,0.65); z-index: 25;">
+        <div id="readyGoText" class="score-giant" style="text-shadow: 4px 4px 0px #000;">READY?</div>
+    </div>
+
     <div id="startScreen" class="ui-layer full-screen-menu bg-start">
         <div style="height: 200px; width: 100%"></div>
         
@@ -454,6 +459,7 @@
     
     let isPlaying = false;
     let isPaused = false;
+    let isTransitioning = false;
     
     let isHitFreeze = false;
     let hitFreezeTimer = 0;
@@ -471,7 +477,9 @@
     
     let policePresence = false;
     let policeReactionTimer = CONFIG.policeWarningSeconds;
+    
     let lastTime = 0;
+    let globalScrollOffset = 0; 
 
     const pCfg = ENTITY_CONFIG["player"];
     const player = { x: 255, y: 750, width: pCfg.w, height: pCfg.h, invulnerableSeconds: 0 };
@@ -484,14 +492,23 @@
                 touchControls.classList.add("keyboard-mode");
             }
         }
-        if (e.key === 'p' || e.key === 'P') togglePause();
+        if (e.key === 'p' || e.key === 'P') {
+            if (isPlaying && !isTransitioning) {
+                if (isPaused) resumeGame();
+                else pauseGame();
+            }
+        }
         if (e.key === 'Enter') {
+            if (isTransitioning) return;
+            
             if (!isPlaying && !startScreen.classList.contains("hidden") && document.getElementById("startBtn").disabled === false) {
                 document.getElementById("startBtn").click();
             } else if (!isPlaying && !rulesScreen.classList.contains("hidden")) {
                 document.getElementById("startFromRulesBtn").click();
             } else if (!isPlaying && !gameOverScreen.classList.contains("hidden")) {
                 document.getElementById("restartBtn").click();
+            } else if (isPlaying && isPaused) {
+                resumeGame(); 
             }
         }
     });
@@ -536,25 +553,49 @@
         startScreen.classList.remove("hidden");
     });
 
-    document.getElementById("pauseBtn").addEventListener("click", togglePause);
-    document.getElementById("resumeBtn").addEventListener("click", togglePause);
+    document.getElementById("pauseBtn").addEventListener("click", pauseGame);
+    document.getElementById("resumeBtn").addEventListener("click", resumeGame);
     document.getElementById("restartPauseBtn").addEventListener("click", () => {
         isPaused = false;
         startGame();
     });
 
-    function togglePause() {
-        if (!isPlaying && pauseScreen.classList.contains("hidden")) return;
-        isPaused = !isPaused;
-        if (isPaused) {
-            pauseScreen.classList.remove("hidden");
-            touchControls.classList.add("hidden");
-        } else {
-            pauseScreen.classList.add("hidden");
-            if (!prefersKeyboard) touchControls.classList.remove("hidden");
-            lastTime = performance.now();
-            requestAnimationFrame(gameLoop);
-        }
+    function startReadyGoSequence(callback) {
+        isTransitioning = true;
+        touchControls.classList.add("hidden");
+        
+        const screen = document.getElementById("readyGoScreen");
+        const text = document.getElementById("readyGoText");
+        
+        screen.classList.remove("hidden");
+        text.innerText = "READY?";
+        
+        setTimeout(() => {
+            text.innerText = "GO!";
+            setTimeout(() => {
+                screen.classList.add("hidden");
+                isTransitioning = false;
+                if (!prefersKeyboard) touchControls.classList.remove("hidden");
+                
+                lastTime = performance.now(); 
+                if (callback) callback();
+            }, 750);
+        }, 750);
+    }
+
+    function pauseGame() {
+        if (!isPlaying || isPaused || isTransitioning || isHitFreeze) return;
+        isPaused = true;
+        pauseScreen.classList.remove("hidden");
+        touchControls.classList.add("hidden");
+    }
+
+    function resumeGame() {
+        if (!isPaused || isTransitioning) return;
+        pauseScreen.classList.add("hidden");
+        startReadyGoSequence(() => {
+            isPaused = false;
+        });
     }
 
     function startGame() {
@@ -565,26 +606,28 @@
         
         document.getElementById("hud").classList.remove("hidden");
         document.getElementById("levelDisplay").classList.remove("hidden");
-        if (!prefersKeyboard) touchControls.classList.remove("hidden");
 
         score = 0;
         lives = 3;
         currentLevel = 0;
         frameCount = 0;
         entities = [];
+        
         isPaused = false;
         isHitFreeze = false;
-        
         policePresence = false;
         policeReactionTimer = CONFIG.policeWarningSeconds;
         
         player.x = 255;
         player.invulnerableSeconds = 0;
+        globalScrollOffset = 0;
 
         updateHUD();
-        isPlaying = true;
-        lastTime = performance.now();
-        requestAnimationFrame(gameLoop);
+        isPlaying = true; 
+        
+        startReadyGoSequence(() => {
+            lastTime = performance.now();
+        });
     }
 
     function isOverlapping(newEnt, typeList, bufferX = 10, bufferY = 60) {
@@ -641,7 +684,6 @@
             } else {
                 let inBikeLane = Math.random() < 0.5;
                 
-                // Rule: Don't spawn fences in the bike lane if the police are present
                 if (obsDef.configKey === "fence" && policePresence) {
                     inBikeLane = false; 
                 }
@@ -674,7 +716,12 @@
         if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
             let cfg = ENTITY_CONFIG["police"];
-            entities.push({ type: "police", asset: "police1", x: side, y: -80, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed });
+            
+            entities.push({ 
+                type: "police", asset: "police1", state: "entering", activeTime: 0,
+                x: side, y: 2080, vx: 0, vy: -1120, 
+                width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY 
+            });
         }
     }
 
@@ -742,6 +789,8 @@
             }
             return; 
         }
+        
+        globalScrollOffset += CONFIG.scrollSpeed * dt;
 
         if (keys.ArrowLeft) player.x -= CONFIG.playerSpeed * dt;
         if (keys.ArrowRight) player.x += CONFIG.playerSpeed * dt;
@@ -763,6 +812,20 @@
             if (ent.type === "police") {
                 policeFoundThisFrame = true;
                 ent.asset = (Math.floor(performance.now() / 150) % 2 === 0) ? "police1" : "police2";
+                
+                if (ent.state === 'entering') {
+                    if (ent.y <= 400) {
+                        ent.y = 400;
+                        ent.vy = 0;
+                        ent.state = 'chasing';
+                    }
+                } else if (ent.state === 'chasing') {
+                    ent.activeTime += dt;
+                    if (ent.activeTime > 3.0) { 
+                        ent.state = 'leaving';
+                        ent.vy = -1200; 
+                    }
+                }
             }
             
             if (ent.type === "car" || ent.type === "bus") {
@@ -790,7 +853,17 @@
                 ent.vx = 0;
             }
             
-            if (ent.y > CONFIG.height + 400 || ent.y < -400) entities.splice(i, 1);
+            if (ent.y > CONFIG.height + 1500 || ent.y < -1500) entities.splice(i, 1);
+        }
+
+        if (policeFoundThisFrame && !policePresence) {
+            for (let i = entities.length - 1; i >= 0; i--) {
+                let e = entities[i];
+                if (e.type === "obstacle" && e.asset.includes("fence")) {
+                    let inBikeLane = !(e.x + e.width <= CONFIG.roadWidth || e.x >= CONFIG.roadWidth + CONFIG.bikeLaneWidth);
+                    if (inBikeLane) entities.splice(i, 1);
+                }
+            }
         }
 
         if (policeFoundThisFrame) {
@@ -810,8 +883,9 @@
         let bgImg = ASSETS["game_bg"];
         
         if (bgImg && bgImg.complete && bgImg.naturalWidth !== 0) {
-            let tileH = bgImg.height || 512; 
-            let scrollOffset = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % tileH;
+            let scale = CONFIG.width / bgImg.naturalWidth;
+            let tileH = bgImg.naturalHeight * scale; 
+            let scrollOffset = globalScrollOffset % tileH;
             
             for(let y = scrollOffset - tileH; y < CONFIG.height; y += tileH) {
                 ctx.drawImage(bgImg, 0, y, CONFIG.width, tileH);
@@ -828,7 +902,7 @@
             ctx.setLineDash([20, 20]);
             ctx.lineWidth = 4;
             ctx.beginPath();
-            let fallBackScroll = (isHitFreeze || isPaused) ? 0 : (performance.now() * 0.001 * CONFIG.scrollSpeed) % 40;
+            let fallBackScroll = globalScrollOffset % 40;
             ctx.moveTo(CONFIG.roadWidth, fallBackScroll - 40);
             ctx.lineTo(CONFIG.roadWidth, CONFIG.height);
             ctx.stroke();
@@ -858,7 +932,6 @@
             if (ASSETS[ent.asset]) {
                 let dX = ent.x + (ent.offsetX || 0);
                 let dY = ent.y + (ent.offsetY || 0);
-                
                 ctx.drawImage(ASSETS[ent.asset], dX, dY, ent.drawW, ent.drawH);
             }
         }
@@ -902,20 +975,24 @@
     }
 
     function gameLoop(timestamp) {
-        if (!isPlaying || isPaused) return;
-
+        requestAnimationFrame(gameLoop);
+        
+        if (!lastTime) lastTime = timestamp;
         let dt = (timestamp - lastTime) / 1000;
         lastTime = timestamp;
 
         if (dt > 0.1) dt = 0.1; 
 
-        update(dt);
-        draw();
+        if (isPlaying && !isPaused && !isTransitioning) {
+            update(dt);
+        }
         
-        requestAnimationFrame(gameLoop);
+        if (isPlaying || isPaused || isTransitioning) {
+            draw();
+        }
     }
     
-    draw();
+    requestAnimationFrame(gameLoop);
 </script>
 </body>
 </html>
