@@ -127,8 +127,8 @@
             text-shadow: 5px 5px 0px #ff1744, 6px 6px 0px #000;
             letter-spacing: 2px;
         }
-        .subtitle {
-            font-size: clamp(16px, 3.5vw, 24px);
+        .final-score-level {
+            font-size: clamp(24px, 3.5vw, 36px);
             color: #00ffff;
             margin-bottom: 40px;
             text-shadow: 4px 4px 0px #000;
@@ -136,7 +136,7 @@
             text-align: center;
         }
         .score-giant {
-            font-size: clamp(60px, 10vw, 80px);
+            font-size: clamp(96px, 10vw, 128px);
             line-height: 1;
             color: #ffcc00;
             text-align: center;
@@ -145,11 +145,11 @@
             letter-spacing: 2px;
         }
         .game-over-title {
-            font-size: clamp(28px, 7vw, 36px);
+            font-size: clamp(44px, 7vw, 64px);
             color: #ff1744;
             margin: 0 0 15px 0;
             letter-spacing: 3px;
-            text-shadow: 3px 3px 0px #000;
+            text-shadow: 4px 4px 0px #000;
         }
         
         .rules-container {
@@ -253,7 +253,7 @@
     <div id="hud" class="hud hidden">
         <div id="scoreDisplay">SCORE: 0</div>
         <button id="pauseBtn" class="chunky-btn btn-grey pause-hud-btn">PAUSE</button>
-        <div id="livesDisplay">LIVES: ❤️❤️❤️</div>
+        <div id="livesDisplay">LIVES: ♥♥♥</div>
     </div>
     <div id="levelDisplay" class="hud-center hidden">LEVEL 1: PRENZLAUER BERG</div>
 
@@ -267,8 +267,7 @@
     </div>
 
     <div id="startScreen" class="ui-layer full-screen-menu bg-start">
-        <h1 class="title-giant">RADWEG<br>ROYALE</h1>
-        <p class="subtitle">Berlin Bike Lane Survival</p>
+        <div style="height: 200px; width: 100%"></div>
         
         <button id="startBtn" class="chunky-btn btn-yellow btn-giant" disabled>LOADING...</button>
         <button id="showRulesBtn" class="chunky-btn btn-blue hidden">HOW TO PLAY</button>
@@ -304,7 +303,7 @@
     <div id="gameOverScreen" class="ui-layer full-screen-menu bg-gameover hidden">
         <div class="score-giant" id="finalScoreVal">0</div>
         <div class="game-over-title">GAME OVER</div>
-        <div class="subtitle" id="finalScoreLevel" style="margin-bottom: 30px;">Level 1: Prenzlauer Berg</div>
+        <div class="final-score-level" id="finalScoreLevel" style="margin-bottom: 30px;">Level 1: Prenzlauer Berg</div>
         <button id="restartBtn" class="chunky-btn btn-yellow btn-giant">TRY AGAIN</button>
     </div>
 </div>
@@ -711,7 +710,7 @@
     function updateHUD() {
         document.getElementById("scoreDisplay").innerText = `SCORE: ${Math.floor(score)}`;
         let hearts = "";
-        for(let i=0; i<lives; i++) hearts += "❤️";
+        for(let i=0; i<lives; i++) hearts += "♥ ";
         document.getElementById("livesDisplay").innerText = `LIVES: ${hearts}`;
         document.getElementById("levelDisplay").innerText = `LEVEL ${currentLevel + 1}: ${LEVELS[currentLevel].name}`;
     }
