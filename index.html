@@ -28,7 +28,6 @@
             padding: 0;
             background-color: #050505;
             color: #fff;
-            /* Primary pixel font for the game UI */
             font-family: 'PixelFont', 'Lucida Console', Monaco, monospace;
             display: flex;
             justify-content: center;
@@ -713,15 +712,11 @@
             entities.push({ type: "pedestrian", asset: getVariant("pedestrian"), x: (CONFIG.roadWidth + CONFIG.bikeLaneWidth + 10) + Math.random() * (CONFIG.sidewalkWidth - 40), y: -30, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: isErratic ? - (70 + Math.random() * 70) : 0, vy: CONFIG.scrollSpeed + (Math.random() * 40 - 20) });
         }
 
+        // Reverted police logic: Spawns off-screen at the top, acts as a static blockade based on map scroll speed.
         if (!policePresence && Math.random() < lvl.policeChance * dt) {
             let side = Math.random() > 0.5 ? 170 : 320; 
             let cfg = ENTITY_CONFIG["police"];
-            
-            entities.push({ 
-                type: "police", asset: "police1", state: "entering", activeTime: 0,
-                x: side, y: 2080, vx: 0, vy: -1120, 
-                width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY 
-            });
+            entities.push({ type: "police", asset: "police1", x: side, y: -80, width: cfg.w, height: cfg.h, drawW: cfg.drawW, drawH: cfg.drawH, offsetX: cfg.offsetX, offsetY: cfg.offsetY, vx: 0, vy: CONFIG.scrollSpeed });
         }
     }
 
@@ -812,20 +807,6 @@
             if (ent.type === "police") {
                 policeFoundThisFrame = true;
                 ent.asset = (Math.floor(performance.now() / 150) % 2 === 0) ? "police1" : "police2";
-                
-                if (ent.state === 'entering') {
-                    if (ent.y <= 400) {
-                        ent.y = 400;
-                        ent.vy = 0;
-                        ent.state = 'chasing';
-                    }
-                } else if (ent.state === 'chasing') {
-                    ent.activeTime += dt;
-                    if (ent.activeTime > 3.0) { 
-                        ent.state = 'leaving';
-                        ent.vy = -1200; 
-                    }
-                }
             }
             
             if (ent.type === "car" || ent.type === "bus") {
@@ -853,17 +834,7 @@
                 ent.vx = 0;
             }
             
-            if (ent.y > CONFIG.height + 1500 || ent.y < -1500) entities.splice(i, 1);
-        }
-
-        if (policeFoundThisFrame && !policePresence) {
-            for (let i = entities.length - 1; i >= 0; i--) {
-                let e = entities[i];
-                if (e.type === "obstacle" && e.asset.includes("fence")) {
-                    let inBikeLane = !(e.x + e.width <= CONFIG.roadWidth || e.x >= CONFIG.roadWidth + CONFIG.bikeLaneWidth);
-                    if (inBikeLane) entities.splice(i, 1);
-                }
-            }
+            if (ent.y > CONFIG.height + 400 || ent.y < -400) entities.splice(i, 1);
         }
 
         if (policeFoundThisFrame) {
